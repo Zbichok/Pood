@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Net.Mail;
 using System.Windows.Forms;
@@ -13,6 +13,7 @@ namespace Tooted
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterParent;
+            Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             MinimizeBox = false;

@@ -69,6 +69,5 @@ namespace Tooted.Properties {
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
-        
     }
 }

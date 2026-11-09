@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Tooted
 {
@@ -20,13 +20,27 @@ namespace Tooted
                 return;
             }
 
-            using (var login = new LoginForm())
+            // Tsükkel: logi sisse -> peamenüü -> "Logi välja" viib tagasi sisselogimisele.
+            while (true)
             {
-                if (login.ShowDialog() != DialogResult.OK)
-                    return;
-            }
+                using (var login = new LoginForm())
+                {
+                    if (login.ShowDialog() != DialogResult.OK)
+                        break;
+                }
 
-            Application.Run(new Peavorm());
+                Ostukorv.Tuhjenda();
+
+                using var peavorm = new Peavorm();
+                Application.Run(peavorm);
+
+                if (!peavorm.LogiValja)
+                    break;
+
+                // Uus kasutaja alustab tühja ostukorviga
+                AktiivneKasutaja.LogiValja();
+                Ostukorv.Tuhjenda();
+            }
         }
 
         private static void LooAndmebaasJaKasutajad()
@@ -54,6 +68,8 @@ namespace Tooted
 
                 db.SaveChanges();
             }
+
+            SeedAndmed.Lisa(db);
 
             if (!db.Kasutajad.Any(k => k.Email.ToLower() == "timoha@pro.ee"))
             {

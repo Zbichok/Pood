@@ -24,6 +24,7 @@ namespace Tooted
             picPilt.SizeMode = PictureBoxSizeMode.Zoom;
 
             StartPosition = FormStartPosition.CenterScreen;
+            Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
 

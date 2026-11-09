@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Tooted
@@ -14,15 +10,26 @@ namespace Tooted
     {
         private readonly ToodedContext _db;
 
+        private const int KaartLaius = 160;
+        private const int KaartKorgus = 245;
+        private const int Veerge = 5;
+
         public Form1()
         {
             InitializeComponent();
             _db = new ToodedContext();
             LaeKategooriadJaPildid();
+            UuendaKorviInfo();
             StartPosition = FormStartPosition.CenterScreen;
+            Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
+            Text = "Pood";
+
+            if (AktiivneKasutaja.OnAdmin)
+                lblMarkus.Text = "Admin ei saa ostukorvi muuta (ainult vaatamine).";
         }
+
         private void LaeKategooriadJaPildid()
         {
             tabpood.TabPages.Clear();
@@ -44,48 +51,93 @@ namespace Tooted
 
                 foreach (var t in tooted)
                 {
-                    Panel p = new Panel();
-                    p.Width = 150;
-                    p.Height = 200;
-                    p.BorderStyle = BorderStyle.FixedSingle;
+                    page.Controls.Add(LooKaart(t, x, y));
 
-                    PictureBox pb = new PictureBox();
-                    pb.Width = 140;
-                    pb.Height = 140;
-                    pb.SizeMode = PictureBoxSizeMode.Zoom;
-                    pb.Location = new Point(5, 5);
-                    pb.Click += (s, e) =>
-                    {
-                        MessageBox.Show($"Toode: {t.Toodenimetus}\nHind: {t.Hind}€");
-                    };
-
-                    pb.Image = Pildid.Lae(t.Pilt);
-
-                    Label lbl = new Label();
-                    lbl.Text = t.Toodenimetus;
-                    lbl.AutoSize = false;
-                    lbl.TextAlign = ContentAlignment.MiddleCenter;
-                    lbl.Location = new Point(5, 150);
-                    lbl.Width = 140;
-
-                    p.Controls.Add(pb);
-                    p.Controls.Add(lbl);
-
-                    p.Location = new Point(x, y);
-                    page.Controls.Add(p);
-
-                    x += 160;
+                    x += KaartLaius + 10;
                     count++;
 
-                    if (count % 4 == 0)
+                    if (count % Veerge == 0)
                     {
                         x = 10;
-                        y += 210;
+                        y += KaartKorgus + 10;
                     }
                 }
 
                 tabpood.TabPages.Add(page);
             }
+        }
+
+        private Panel LooKaart(Toode t, int x, int y)
+        {
+            Panel p = new Panel
+            {
+                Width = KaartLaius,
+                Height = KaartKorgus,
+                BorderStyle = BorderStyle.FixedSingle,
+                Location = new Point(x, y)
+            };
+
+            PictureBox pb = new PictureBox
+            {
+                Width = 140,
+                Height = 140,
+                SizeMode = PictureBoxSizeMode.Zoom,
+                Location = new Point(8, 5),
+                Image = Pildid.Lae(t.Pilt)
+            };
+
+            Label lblNimi = new Label
+            {
+                Text = t.Toodenimetus,
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Location = new Point(5, 150),
+                Size = new Size(KaartLaius - 12, 40)
+            };
+
+            Label lblHind = new Label
+            {
+                Text = $"{t.Hind:0.00} €",
+                AutoSize = false,
+                TextAlign = ContentAlignment.MiddleCenter,
+                Font = new Font(Font, FontStyle.Bold),
+                Location = new Point(5, 192),
+                Size = new Size(KaartLaius - 12, 20)
+            };
+
+            Button btn = new Button
+            {
+                Text = "Lisa korvi",
+                Location = new Point(15, 213),
+                Size = new Size(KaartLaius - 32, 27),
+                Enabled = !AktiivneKasutaja.OnAdmin && t.Kogus > 0
+            };
+
+            if (t.Kogus <= 0)
+                btn.Text = "Laost otsas";
+
+            btn.Click += (s, e) =>
+            {
+                if (!Ostukorv.Lisa(t, 1, out string? viga))
+                {
+                    MessageBox.Show(viga);
+                    return;
+                }
+
+                UuendaKorviInfo();
+            };
+
+            p.Controls.Add(pb);
+            p.Controls.Add(lblNimi);
+            p.Controls.Add(lblHind);
+            p.Controls.Add(btn);
+
+            return p;
+        }
+
+        private void UuendaKorviInfo()
+        {
+            lblKorv.Text = $"Ostukorv: {Ostukorv.Tukke} tk – {Ostukorv.Kokku:0.00} €";
         }
 
         private void tabPage1_Click(object sender, EventArgs e)

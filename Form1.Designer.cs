@@ -22,6 +22,8 @@ namespace Tooted
             tabpood = new TabControl();
             tabPage1 = new TabPage();
             tabPage2 = new TabPage();
+            lblKorv = new Label();
+            lblMarkus = new Label();
             tabpood.SuspendLayout();
             SuspendLayout();
             tabpood.Controls.Add(tabPage1);
@@ -44,10 +46,21 @@ namespace Tooted
             tabPage2.Size = new Size(892, 572);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
+            lblKorv.AutoSize = true;
+            lblKorv.Font = new Font("Segoe UI", 11F, FontStyle.Bold);
+            lblKorv.Location = new Point(10, 555);
+            lblKorv.Name = "lblKorv";
+            lblKorv.Text = "Ostukorv: 0 tk – 0.00 €";
+            lblMarkus.AutoSize = true;
+            lblMarkus.ForeColor = Color.Firebrick;
+            lblMarkus.Location = new Point(10, 585);
+            lblMarkus.Name = "lblMarkus";
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(919, 624);
             Controls.Add(tabpood);
+            Controls.Add(lblKorv);
+            Controls.Add(lblMarkus);
             Name = "Form1";
             Text = "Form1";
             tabpood.ResumeLayout(false);
@@ -58,5 +71,7 @@ namespace Tooted
         private TabControl tabpood;
         private TabPage tabPage1;
         private TabPage tabPage2;
+        private Label lblKorv;
+        private Label lblMarkus;
     }
 }

@@ -1,8 +1,6 @@
-using Microsoft.EntityFrameworkCore;
-using PdfSharpCore.Drawing;
+﻿using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using System;
-using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -14,127 +12,87 @@ namespace Tooted
 {
     public partial class ArveForm : Form
     {
-        private readonly ToodedContext _db = new ToodedContext();
-        List<OstukorviRida> ostukorv = new List<OstukorviRida>();
+        // ------------------------------------------------------------------
+        // Gmail e-maili saatmine.
+        // Gmail ei luba tavalist parooli – vaja on "rakenduse parooli" (App password):
+        //   1. Google kontol peab olema sisse lülitatud kaheastmeline autentimine.
+        //   2. myaccount.google.com -> Turvalisus -> Rakenduste paroolid -> loo uus
+        //      (https://myaccount.google.com/apppasswords)
+        //   3. Google näitab 16-kohalist parooli – kirjuta see siia konstandi asemele "xxxx".
+        //
+        // NB! Päris parooliga koodi ei tohi GitHubi push'ida! Enne `git push` pane tagasi "xxxx".
+        // Kui siin on veel "xxxx", küsib programm saatja e-maili ja parooli aknas.
+        // ------------------------------------------------------------------
+        private const string saatjaEmail = "xxxx";
+        private const string rakenduseParool = "xxxx";
 
-        public Toode SelectedToode => listTooted.SelectedItem as Toode;
+        private const string Kaust = "Arved";
 
         public ArveForm()
         {
             InitializeComponent();
-            LaeTooted();
-            ArvutaKoguSumma();
             StartPosition = FormStartPosition.CenterScreen;
+            Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-        }
 
-        private void LaeTooted()
-        {
-            pictureBox1.SizeMode = PictureBoxSizeMode.Zoom;
-
-            listTooted.DataSource = _db.Toodetabel
-                .Include(t => t.Kategooria)
-                .ToList();
-            listTooted.DisplayMember = "Toodenimetus";
-        }
-
-        private void NaitaToodet(Toode toode)
-        {
-            toodeNimi.Text = toode.Toodenimetus;
-            toodeKirjeldus.Text = $"{toode.Hind:0.00} € | {toode.Kogus} tk | {toode.Kategooria?.Kategooria_nimetus}";
-
-            pictureBox1.Image?.Dispose();
-            pictureBox1.Image = Pildid.Lae(toode.Pilt);
-        }
-
-        private void listTooted_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            if (SelectedToode != null)
-                NaitaToodet(SelectedToode);
-        }
-
-        private void btnLisaKorvi_Click(object sender, EventArgs e)
-        {
-            if (SelectedToode == null)
+            // Admin ei tohi arvet muuta – ainult vaatamine.
+            if (AktiivneKasutaja.OnAdmin)
             {
-                MessageBox.Show("Vali toode enne ostukorvi lisamist.");
-                return;
-            }
-
-            string kogusStr = Microsoft.VisualBasic.Interaction.InputBox(
-                "Sisesta kogus", "Kogus", "1");
-
-            if (!int.TryParse(kogusStr, out int kogus) || kogus <= 0)
-            {
-                MessageBox.Show("Vale kogus.");
-                return;
-            }
-
-            var olemas = ostukorv.FirstOrDefault(r => r.Toode.Id == SelectedToode.Id);
-            int kokkuKorvis = (olemas?.Kogus ?? 0) + kogus;
-
-            if (kokkuKorvis > SelectedToode.Kogus)
-            {
-                MessageBox.Show($"Laos on ainult {SelectedToode.Kogus} tk.");
-                return;
-            }
-
-            if (olemas != null)
-            {
-                olemas.Kogus = kokkuKorvis;
-            }
-            else
-            {
-                ostukorv.Add(new OstukorviRida
-                {
-                    Toode = SelectedToode,
-                    Kogus = kogus
-                });
+                btnEemalda.Enabled = false;
+                btnGenPDF.Enabled = false;
+                btnSaadaEmail.Enabled = false;
+                lblMarkus.Text = "Admin saab arvet ainult vaadata, mitte muuta.";
             }
 
             UuendaOstukorvi();
         }
 
-        private void listOstukorv_DoubleClick(object sender, EventArgs e)
+        private void UuendaOstukorvi()
         {
+            listOstukorv.Items.Clear();
+            foreach (var rida in Ostukorv.Read)
+                listOstukorv.Items.Add(rida);
+
+            lblKokku.Text = $"Kokku: {Ostukorv.Kokku:0.00} €";
+        }
+
+        private void EemaldaValitud()
+        {
+            if (AktiivneKasutaja.OnAdmin) return;
             if (listOstukorv.SelectedItem is not OstukorviRida rida) return;
 
             if (MessageBox.Show($"Eemaldada \"{rida.Toode.Toodenimetus}\" korvist?",
                     "Ostukorv", MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
-                ostukorv.Remove(rida);
+                Ostukorv.Eemalda(rida);
                 UuendaOstukorvi();
             }
         }
 
-        private void UuendaOstukorvi()
+        private void btnEemalda_Click(object sender, EventArgs e)
         {
-            listOstukorv.Items.Clear();
-            foreach (var rida in ostukorv)
-                listOstukorv.Items.Add(rida);
-
-            ArvutaKoguSumma();
-        }
-
-        private void ArvutaKoguSumma()
-        {
-            float kokku = ostukorv.Sum(r => r.Summa);
-
-            lblKokku.Text = $"Kokku: {kokku:0.00} €";
-        }
-
-        private void btnGenPDF_Click(object sender, EventArgs e)
-        {
-            if (ostukorv.Count == 0)
+            if (listOstukorv.SelectedItem == null)
             {
-                MessageBox.Show("Ostukorv on tühi.");
+                MessageBox.Show("Vali rida, mida eemaldada.");
                 return;
             }
+            EemaldaValitud();
+        }
 
-            Directory.CreateDirectory("Arved");
+        private void listOstukorv_DoubleClick(object sender, EventArgs e)
+        {
+            EemaldaValitud();
+        }
 
-            string failinimi = $"Arved/Arve_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+        // ------------------------------------------------------------------
+        // PDF
+        // ------------------------------------------------------------------
+        private string LooPdf()
+        {
+            Directory.CreateDirectory(Kaust);
+
+            string failinimi = Path.Combine(Kaust, $"Arve_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
 
             PdfDocument document = new PdfDocument();
             PdfPage page = document.AddPage();
@@ -148,41 +106,85 @@ namespace Tooted
             gfx.DrawString($"Kuupäev: {DateTime.Now:dd.MM.yyyy HH:mm}", font, XBrushes.Black,
                 new XRect(20, 55, page.Width - 40, 20), XStringFormats.TopLeft);
 
-            int y = 90;
-            foreach (var item in ostukorv)
+            gfx.DrawString($"Klient: {AktiivneKasutaja.Nimi}", font, XBrushes.Black,
+                new XRect(20, 75, page.Width - 40, 20), XStringFormats.TopLeft);
+
+            double y = 110;
+            foreach (var item in Ostukorv.Read)
             {
+                if (y > page.Height - 80)
+                {
+                    gfx.Dispose();
+                    page = document.AddPage();
+                    gfx = XGraphics.FromPdfPage(page);
+                    y = 40;
+                }
+
                 gfx.DrawString(item.ToString(), font, XBrushes.Black,
                     new XRect(20, y, page.Width - 40, 20), XStringFormats.TopLeft);
                 y += 30;
             }
 
-            gfx.DrawString($"Kokku: {ostukorv.Sum(r => r.Summa):0.00} €",
+            gfx.DrawString($"Kokku: {Ostukorv.Kokku:0.00} €",
                 new XFont("Verdana", 14), XBrushes.Black,
-                new XRect(20, y + 20, page.Width, 20), XStringFormats.TopLeft);
+                new XRect(20, y + 20, page.Width - 40, 20), XStringFormats.TopLeft);
 
+            gfx.Dispose();
             document.Save(failinimi);
-
-            MessageBox.Show($"PDF on loodud:\n{failinimi}");
+            return failinimi;
         }
 
-        private void btnSaadaEmail_Click(object sender, EventArgs e)
+        private void btnGenPDF_Click(object sender, EventArgs e)
         {
-            if (!Directory.Exists("Arved") || Directory.GetFiles("Arved").Length == 0)
+            if (AktiivneKasutaja.OnAdmin) return;
+
+            if (Ostukorv.Read.Count == 0)
             {
-                MessageBox.Show("Loo enne PDF arve.");
+                MessageBox.Show("Ostukorv on tühi.");
                 return;
             }
 
-            if (!KusiEmailiAndmed(out string saatja, out string appParool, out string saaja))
+            try
+            {
+                string tee = LooPdf();
+                MessageBox.Show($"PDF on loodud:\n{tee}");
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("PDF loomine ebaõnnestus: " + ex.Message);
+            }
+        }
+
+        // ------------------------------------------------------------------
+        // E-mail
+        // ------------------------------------------------------------------
+        private void btnSaadaEmail_Click(object sender, EventArgs e)
+        {
+            if (AktiivneKasutaja.OnAdmin) return;
+
+            if (Ostukorv.Read.Count == 0)
+            {
+                MessageBox.Show("Ostukorv on tühi.");
+                return;
+            }
+
+            bool koodisOlemas = saatjaEmail != "xxxx" && rakenduseParool != "xxxx";
+
+            if (!KusiEmailiAndmed(!koodisOlemas, out string saatja, out string appParool, out string saaja))
                 return;
 
-            string pdfPath = Directory.GetFiles("Arved")
-                .OrderByDescending(f => f)
-                .First();
+            if (koodisOlemas)
+            {
+                saatja = saatjaEmail;
+                appParool = rakenduseParool;
+            }
 
             try
             {
                 Cursor = Cursors.WaitCursor;
+
+                // Saadame alati praeguse ostukorvi PDF-i
+                string pdfPath = LooPdf();
 
                 using var mail = new MailMessage();
                 mail.From = new MailAddress(saatja);
@@ -215,39 +217,56 @@ namespace Tooted
             }
         }
 
-        private bool KusiEmailiAndmed(out string saatja, out string appParool, out string saaja)
+        private bool KusiEmailiAndmed(bool kysiSaatja, out string saatja, out string appParool, out string saaja)
         {
             saatja = appParool = saaja = "";
 
             using Form aken = new Form();
             aken.Text = "Saada arve e-mailiga";
             aken.StartPosition = FormStartPosition.CenterParent;
-            aken.ClientSize = new Size(340, 260);
             aken.FormBorderStyle = FormBorderStyle.FixedDialog;
             aken.MaximizeBox = false;
             aken.MinimizeBox = false;
 
-            Label lblSaatja = new Label { Text = "Saatja e-mail (Gmail):", Location = new Point(15, 15), AutoSize = true };
-            TextBox txtSaatja = new TextBox { Location = new Point(15, 35), Width = 310 };
+            TextBox txtSaatja = new TextBox { Width = 310 };
+            TextBox txtParool = new TextBox { Width = 310, UseSystemPasswordChar = true };
+            TextBox txtSaaja = new TextBox { Width = 310 };
 
-            Label lblParool = new Label { Text = "App password:", Location = new Point(15, 70), AutoSize = true };
-            TextBox txtParool = new TextBox { Location = new Point(15, 90), Width = 310, UseSystemPasswordChar = true };
+            int y = 15;
 
-            Label lblSaaja = new Label { Text = "Saaja e-mail:", Location = new Point(15, 125), AutoSize = true };
-            TextBox txtSaaja = new TextBox { Location = new Point(15, 145), Width = 310 };
+            if (kysiSaatja)
+            {
+                aken.Controls.Add(new Label { Text = "Saatja e-mail (Gmail):", Location = new Point(15, y), AutoSize = true });
+                txtSaatja.Location = new Point(15, y + 20);
+                aken.Controls.Add(txtSaatja);
+                y += 55;
 
-            Button btnSaada = new Button { Text = "Saada", Location = new Point(15, 200), Width = 150 };
-            Button btnLoobu = new Button { Text = "Loobu", Location = new Point(175, 200), Width = 150, DialogResult = DialogResult.Cancel };
+                aken.Controls.Add(new Label { Text = "App password (rakenduse parool):", Location = new Point(15, y), AutoSize = true });
+                txtParool.Location = new Point(15, y + 20);
+                aken.Controls.Add(txtParool);
+                y += 55;
+            }
+
+            aken.Controls.Add(new Label { Text = "Saaja e-mail:", Location = new Point(15, y), AutoSize = true });
+            txtSaaja.Location = new Point(15, y + 20);
+            aken.Controls.Add(txtSaaja);
+            y += 60;
+
+            Button btnSaada = new Button { Text = "Saada", Location = new Point(15, y), Width = 150 };
+            Button btnLoobu = new Button { Text = "Loobu", Location = new Point(175, y), Width = 150, DialogResult = DialogResult.Cancel };
+            aken.Controls.Add(btnSaada);
+            aken.Controls.Add(btnLoobu);
+            aken.ClientSize = new Size(340, y + 50);
 
             btnSaada.Click += (s, args) =>
             {
-                if (!OnEmail(txtSaatja.Text) || !OnEmail(txtSaaja.Text))
+                if (!OnEmail(txtSaaja.Text) || (kysiSaatja && !OnEmail(txtSaatja.Text)))
                 {
-                    MessageBox.Show("Sisesta korrektne saatja ja saaja e-mail!");
+                    MessageBox.Show("Sisesta korrektne e-mail!");
                     return;
                 }
 
-                if (string.IsNullOrWhiteSpace(txtParool.Text))
+                if (kysiSaatja && string.IsNullOrWhiteSpace(txtParool.Text))
                 {
                     MessageBox.Show("Sisesta app password!");
                     return;
@@ -256,7 +275,6 @@ namespace Tooted
                 aken.DialogResult = DialogResult.OK;
             };
 
-            aken.Controls.AddRange(new Control[] { lblSaatja, txtSaatja, lblParool, txtParool, lblSaaja, txtSaaja, btnSaada, btnLoobu });
             aken.AcceptButton = btnSaada;
             aken.CancelButton = btnLoobu;
 

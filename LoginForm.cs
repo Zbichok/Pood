@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using System.Windows.Forms;
 
@@ -10,6 +10,7 @@ namespace Tooted
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterScreen;
+            Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
         }
@@ -37,6 +38,7 @@ namespace Tooted
 
             AktiivneKasutaja.Nimi = kasutaja.Nimi;
             AktiivneKasutaja.Roll = kasutaja.Roll;
+            AktiivneKasutaja.Email = kasutaja.Email;
 
             DialogResult = DialogResult.OK;
             Close();

@@ -12,16 +12,26 @@ namespace Tooted
 {
     public partial class Peavorm : Form
     {
+        /// <summary>true, kui kasutaja vajutas "Logi välja" (mitte akna X-i).</summary>
+        public bool LogiValja { get; private set; }
+
         public Peavorm()
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterScreen;
+            Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
 
             btnTooted.Enabled = AktiivneKasutaja.OnAdmin;
             Text = $"Peamenüü – {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})";
         }
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            LogiValja = true;
+            Close();
+        }
+
         private void btnTooted_Click(object sender, EventArgs e)
         {
             tooted f = new tooted();
