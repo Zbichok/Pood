@@ -45,6 +45,22 @@ namespace Tooted.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<decimal>("Saldo")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<int>("Soodustus")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("TasutaKohaletoimetus")
+                        .HasColumnType("bit");
+
+                    b.Property<int?>("TasutaToodeId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ViimanePoore")
+                        .HasColumnType("datetime2");
+
                     b.HasKey("Id");
 
                     b.ToTable("Kasutajad", (string)null);

@@ -28,24 +28,60 @@ namespace Tooted
 
         private const string Kaust = "Arved";
 
+        // Rulli boonuste jaoks (luuakse koodis, vt LisaBoonusKontrollid)
+        private readonly Label lblKokkuvote = new Label();
+        private readonly Label lblSaldo = new Label();
+        private readonly CheckBox chkSaldo = new CheckBox();
+        private readonly Button btnMaksa = new Button();
+
         public ArveForm()
         {
             InitializeComponent();
+            LisaBoonusKontrollid();
             StartPosition = FormStartPosition.CenterScreen;
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
 
-            // Admin ei tohi arvet muuta – ainult vaatamine.
+            // Admin: ostud on ainult testostud (arve PDF + e-post), andmebaasi ei muudeta.
             if (AktiivneKasutaja.OnAdmin)
             {
-                btnEemalda.Enabled = false;
-                btnGenPDF.Enabled = false;
-                btnSaadaEmail.Enabled = false;
-                lblMarkus.Text = "Admin saab arvet ainult vaadata, mitte muuta.";
+                btnMaksa.Text = "Testost";
+                chkSaldo.Visible = false;
+                lblMarkus.Text = "Admin: testost ei muuda andmebaasi, saldot ega ostukorvi.";
             }
 
             UuendaOstukorvi();
+        }
+
+        private void LisaBoonusKontrollid()
+        {
+            ClientSize = new Size(670, 480);
+
+            lblKokkuvote.AutoSize = false;
+            lblKokkuvote.Location = new Point(20, 322);
+            lblKokkuvote.Size = new Size(440, 84);
+
+            lblKokku.Location = new Point(20, 410);
+            lblMarkus.Location = new Point(20, 445);
+
+            lblSaldo.AutoSize = true;
+            lblSaldo.Location = new Point(480, 190);
+
+            chkSaldo.Text = "Kasuta saldot";
+            chkSaldo.Checked = true;
+            chkSaldo.AutoSize = true;
+            chkSaldo.Location = new Point(480, 215);
+
+            btnMaksa.Text = "Maksa";
+            btnMaksa.Location = new Point(480, 245);
+            btnMaksa.Size = new Size(160, 35);
+            btnMaksa.Click += btnMaksa_Click;
+
+            Controls.Add(lblKokkuvote);
+            Controls.Add(lblSaldo);
+            Controls.Add(chkSaldo);
+            Controls.Add(btnMaksa);
         }
 
         private void UuendaOstukorvi()
@@ -54,12 +90,88 @@ namespace Tooted
             foreach (var rida in Ostukorv.Read)
                 listOstukorv.Items.Add(rida);
 
+            lblKokkuvote.Text = string.Join(Environment.NewLine, Ostukorv.Kokkuvote());
             lblKokku.Text = $"Kokku: {Ostukorv.Kokku:0.00} €";
+            lblSaldo.Text = $"Saldo: {AktiivneKasutaja.Saldo:0.00} €";
+        }
+
+        // ------------------------------------------------------------------
+        // Maksmine: saldo, boonused kasutatakse ära, ostukorv tühjendatakse
+        // ------------------------------------------------------------------
+        private void btnMaksa_Click(object sender, EventArgs e)
+        {
+            if (Ostukorv.Read.Count == 0)
+            {
+                MessageBox.Show("Ostukorv on tühi.");
+                return;
+            }
+
+            // 1) Aadress (ei salvestata kuhugi, elab ainult selle ostu tšekis)
+            string? aadress = AadressForm.Kysi(this);
+            if (aadress == null) return;
+
+            if (AktiivneKasutaja.OnAdmin)
+            {
+                // Testost: andmebaasi, saldot ega ostukorvi ei muudeta
+                if (MessageBox.Show(
+                        "Testost: andmebaasi, saldot ega ostukorvi ei muudeta.\n\nJätka?",
+                        "Testost", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                    return;
+
+                var test = Tellimus.Praegusest(aadress, kuller: true);
+                TootlemisForm.Naita(this);
+                ChekiForm.Naita(this, test, testost: true);
+                return;
+            }
+
+            decimal kokku = Math.Round((decimal)Ostukorv.Kokku, 2);
+            decimal saldoKasutus = chkSaldo.Checked ? Math.Min(AktiivneKasutaja.Saldo, kokku) : 0m;
+            decimal makstakse = kokku - saldoKasutus;
+
+            var vastus = MessageBox.Show(
+                $"Kokku: {kokku:0.00} €\nSaldost: {saldoKasutus:0.00} €\nMakstakse: {makstakse:0.00} €\n\nKinnita ost?",
+                "Maksmine", MessageBoxButtons.YesNo);
+            if (vastus != DialogResult.Yes) return;
+
+            // Hetktõmmis enne ostukorvi tühjendamist ja boonuste kasutamist
+            var tellimus = Tellimus.Praegusest(aadress, kuller: true);
+            tellimus.SaldoKasutus = saldoKasutus;
+            tellimus.Makstud = makstakse;
+
+            try
+            {
+                using var db = new ToodedContext();
+                var k = db.Kasutajad.FirstOrDefault(x => x.Email == AktiivneKasutaja.Email);
+                if (k == null)
+                {
+                    MessageBox.Show("Kasutajat ei leitud.");
+                    return;
+                }
+
+                k.Saldo -= saldoKasutus;
+                k.Soodustus = 0;                       // soodustus on kasutatud
+                k.TasutaKohaletoimetus = false;        // tasuta kohaletoimetus on kasutatud
+                if (Ostukorv.TasutaRida != null)
+                    k.TasutaToodeId = null;            // tasuta toode on kasutatud
+                db.SaveChanges();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Maksmine ebaõnnestus: " + ex.Message);
+                return;
+            }
+
+            Ostukorv.Tuhjenda();
+            AktiivneKasutaja.LaeBoonused();
+            UuendaOstukorvi();
+
+            // 2) "Palun oota" 1-2 sekundit, 3) aitäh + tšekk
+            TootlemisForm.Naita(this);
+            ChekiForm.Naita(this, tellimus, testost: false);
         }
 
         private void EemaldaValitud()
         {
-            if (AktiivneKasutaja.OnAdmin) return;
             if (listOstukorv.SelectedItem is not OstukorviRida rida) return;
 
             if (MessageBox.Show($"Eemaldada \"{rida.Toode.Toodenimetus}\" korvist?",
@@ -90,54 +202,13 @@ namespace Tooted
         // ------------------------------------------------------------------
         private string LooPdf()
         {
-            Directory.CreateDirectory(Kaust);
-
             string failinimi = Path.Combine(Kaust, $"Arve_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
-
-            PdfDocument document = new PdfDocument();
-            PdfPage page = document.AddPage();
-            XGraphics gfx = XGraphics.FromPdfPage(page);
-
-            XFont font = new XFont("Verdana", 12);
-
-            gfx.DrawString("Arve", new XFont("Verdana", 20), XBrushes.Black,
-                new XRect(0, 20, page.Width, 40), XStringFormats.TopCenter);
-
-            gfx.DrawString($"Kuupäev: {DateTime.Now:dd.MM.yyyy HH:mm}", font, XBrushes.Black,
-                new XRect(20, 55, page.Width - 40, 20), XStringFormats.TopLeft);
-
-            gfx.DrawString($"Klient: {AktiivneKasutaja.Nimi}", font, XBrushes.Black,
-                new XRect(20, 75, page.Width - 40, 20), XStringFormats.TopLeft);
-
-            double y = 110;
-            foreach (var item in Ostukorv.Read)
-            {
-                if (y > page.Height - 80)
-                {
-                    gfx.Dispose();
-                    page = document.AddPage();
-                    gfx = XGraphics.FromPdfPage(page);
-                    y = 40;
-                }
-
-                gfx.DrawString(item.ToString(), font, XBrushes.Black,
-                    new XRect(20, y, page.Width - 40, 20), XStringFormats.TopLeft);
-                y += 30;
-            }
-
-            gfx.DrawString($"Kokku: {Ostukorv.Kokku:0.00} €",
-                new XFont("Verdana", 14), XBrushes.Black,
-                new XRect(20, y + 20, page.Width - 40, 20), XStringFormats.TopLeft);
-
-            gfx.Dispose();
-            document.Save(failinimi);
+            ChekiPdf.Loo(Tellimus.Praegusest(), failinimi);
             return failinimi;
         }
 
         private void btnGenPDF_Click(object sender, EventArgs e)
         {
-            if (AktiivneKasutaja.OnAdmin) return;
-
             if (Ostukorv.Read.Count == 0)
             {
                 MessageBox.Show("Ostukorv on tühi.");
@@ -160,17 +231,26 @@ namespace Tooted
         // ------------------------------------------------------------------
         private void btnSaadaEmail_Click(object sender, EventArgs e)
         {
-            if (AktiivneKasutaja.OnAdmin) return;
+            SaadaArve();
+        }
 
+        private void SaadaArve()
+        {
             if (Ostukorv.Read.Count == 0)
             {
                 MessageBox.Show("Ostukorv on tühi.");
                 return;
             }
 
+            SaadaChek(this, Tellimus.Praegusest());
+        }
+
+        /// <summary>Saadab tšeki PDF-i e-postiga. PDF tehakse ajutisse kausta ja kustutatakse pärast.</summary>
+        internal static void SaadaChek(Form omanik, Tellimus t)
+        {
             bool koodisOlemas = saatjaEmail != "xxxx" && rakenduseParool != "xxxx";
 
-            if (!KusiEmailiAndmed(!koodisOlemas, out string saatja, out string appParool, out string saaja))
+            if (!KusiEmailiAndmed(omanik, !koodisOlemas, out string saatja, out string appParool, out string saaja))
                 return;
 
             if (koodisOlemas)
@@ -179,45 +259,48 @@ namespace Tooted
                 appParool = rakenduseParool;
             }
 
+            string pdfPath = Path.Combine(Path.GetTempPath(), $"Arve_{t.Number}_{Guid.NewGuid():N}.pdf");
+
             try
             {
-                Cursor = Cursors.WaitCursor;
+                omanik.Cursor = Cursors.WaitCursor;
+                ChekiPdf.Loo(t, pdfPath);
 
-                // Saadame alati praeguse ostukorvi PDF-i
-                string pdfPath = LooPdf();
-
-                using var mail = new MailMessage();
-                mail.From = new MailAddress(saatja);
-                mail.To.Add(saaja);
-                mail.Subject = "Arve";
-                mail.Body = "Arve on manuses.";
-                mail.Attachments.Add(new Attachment(pdfPath));
-
-                using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                using (var mail = new MailMessage())
                 {
-                    Credentials = new NetworkCredential(saatja, appParool),
-                    EnableSsl = true
-                };
+                    mail.From = new MailAddress(saatja);
+                    mail.To.Add(saaja);
+                    mail.Subject = $"Arve nr {t.Number}";
+                    mail.Body = "Arve on manuses.";
+                    mail.Attachments.Add(new Attachment(pdfPath));
 
-                smtp.Send(mail);
+                    using var smtp = new SmtpClient("smtp.gmail.com", 587)
+                    {
+                        Credentials = new NetworkCredential(saatja, appParool),
+                        EnableSsl = true
+                    };
 
-                MessageBox.Show("Arve saadetud!");
+                    smtp.Send(mail);
+                }
+
+                MessageBox.Show(omanik, "Arve saadetud!");
             }
             catch (SmtpException ex)
             {
-                MessageBox.Show("Saatmine ebaõnnestus. Kontrolli saatja e-maili ja app passwordit.\n\n" + ex.Message);
+                MessageBox.Show(omanik, "Saatmine ebaõnnestus. Kontrolli saatja e-maili ja app passwordit.\n\n" + ex.Message);
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Viga: " + ex.Message);
+                MessageBox.Show(omanik, "Viga: " + ex.Message);
             }
             finally
             {
-                Cursor = Cursors.Default;
+                omanik.Cursor = Cursors.Default;
+                try { File.Delete(pdfPath); } catch { }
             }
         }
 
-        private bool KusiEmailiAndmed(bool kysiSaatja, out string saatja, out string appParool, out string saaja)
+        private static bool KusiEmailiAndmed(IWin32Window omanik, bool kysiSaatja, out string saatja, out string appParool, out string saaja)
         {
             saatja = appParool = saaja = "";
 
@@ -278,7 +361,7 @@ namespace Tooted
             aken.AcceptButton = btnSaada;
             aken.CancelButton = btnLoobu;
 
-            if (aken.ShowDialog(this) != DialogResult.OK)
+            if (aken.ShowDialog(omanik) != DialogResult.OK)
                 return false;
 
             saatja = txtSaatja.Text.Trim();

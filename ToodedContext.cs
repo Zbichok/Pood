@@ -19,6 +19,7 @@ namespace Tooted
             modelBuilder.Entity<Kategooria>().ToTable("Kategooriatabel");
             modelBuilder.Entity<Toode>().ToTable("Toodetabel");
             modelBuilder.Entity<Kasutaja>().ToTable("Kasutajad");
+            modelBuilder.Entity<Kasutaja>().Property(k => k.Saldo).HasPrecision(10, 2);
         }
     }
 }

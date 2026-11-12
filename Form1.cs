@@ -11,7 +11,7 @@ namespace Tooted
         private readonly ToodedContext _db;
 
         private const int KaartLaius = 160;
-        private const int KaartKorgus = 245;
+        private const int KaartKorgus = 262;
         private const int Veerge = 5;
 
         public Form1()
@@ -27,7 +27,7 @@ namespace Tooted
             Text = "Pood";
 
             if (AktiivneKasutaja.OnAdmin)
-                lblMarkus.Text = "Admin ei saa ostukorvi muuta (ainult vaatamine).";
+                lblMarkus.Text = "Admin: ostud on testostud (andmeid ei muudeta).";
         }
 
         private void LaeKategooriadJaPildid()
@@ -79,10 +79,10 @@ namespace Tooted
 
             PictureBox pb = new PictureBox
             {
-                Width = 140,
-                Height = 140,
+                Width = 120,
+                Height = 120,
                 SizeMode = PictureBoxSizeMode.Zoom,
-                Location = new Point(8, 5),
+                Location = new Point(18, 5),
                 Image = Pildid.Lae(t.Pilt)
             };
 
@@ -91,8 +91,8 @@ namespace Tooted
                 Text = t.Toodenimetus,
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleCenter,
-                Location = new Point(5, 150),
-                Size = new Size(KaartLaius - 12, 40)
+                Location = new Point(5, 128),
+                Size = new Size(KaartLaius - 12, 38)
             };
 
             Label lblHind = new Label
@@ -101,35 +101,97 @@ namespace Tooted
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Font = new Font(Font, FontStyle.Bold),
-                Location = new Point(5, 192),
+                Location = new Point(5, 167),
                 Size = new Size(KaartLaius - 12, 20)
+            };
+
+            bool laos = t.Kogus > 0;
+            int maxKogus = Math.Max(1, t.Kogus);
+
+            // Koguse valik: [-] [arv] [+] – nuppudega või käsitsi kirjutades
+            Button btnMiinus = new Button
+            {
+                Text = "-",
+                Location = new Point(15, 191),
+                Size = new Size(30, 27),
+                Enabled = laos
+            };
+
+            TextBox txtKogus = new TextBox
+            {
+                Text = "1",
+                TextAlign = HorizontalAlignment.Center,
+                MaxLength = 4,
+                Location = new Point(49, 192),
+                Width = 58,
+                Enabled = laos
+            };
+
+            Button btnPluss = new Button
+            {
+                Text = "+",
+                Location = new Point(111, 191),
+                Size = new Size(30, 27),
+                Enabled = laos
             };
 
             Button btn = new Button
             {
-                Text = "Lisa korvi",
-                Location = new Point(15, 213),
+                Text = laos ? "Lisa korvi" : "Laost otsas",
+                Location = new Point(15, 224),
                 Size = new Size(KaartLaius - 32, 27),
-                Enabled = !AktiivneKasutaja.OnAdmin && t.Kogus > 0
+                Enabled = laos
             };
 
-            if (t.Kogus <= 0)
-                btn.Text = "Laost otsas";
+            int LoeKogus() => int.TryParse(txtKogus.Text, out int v) ? v : 0;
+            void SeaKogus(int v) => txtKogus.Text = Math.Clamp(v, 1, maxKogus).ToString();
+
+            // Ainult numbrid
+            txtKogus.KeyPress += (s, e) =>
+            {
+                if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+                    e.Handled = true;
+            };
+            // Kui väli kaotab fookuse: tühi / liiga suur / 0 -> korrigeeri
+            txtKogus.Leave += (s, e) => SeaKogus(LoeKogus());
+            txtKogus.KeyDown += (s, e) =>
+            {
+                if (e.KeyCode == Keys.Enter)
+                {
+                    SeaKogus(LoeKogus());
+                    e.SuppressKeyPress = true;
+                }
+            };
+
+            btnMiinus.Click += (s, e) => SeaKogus(LoeKogus() - 1);
+            btnPluss.Click += (s, e) => SeaKogus(LoeKogus() + 1);
 
             btn.Click += (s, e) =>
             {
-                if (!Ostukorv.Lisa(t, 1, out string? viga))
+                int kogus = LoeKogus();
+                if (kogus < 1)
+                {
+                    SeaKogus(1);
+                    MessageBox.Show("Sisesta kogus (vähemalt 1).");
+                    return;
+                }
+
+                if (!Ostukorv.Lisa(t, kogus, out string? viga))
                 {
                     MessageBox.Show(viga);
                     return;
                 }
 
+                SeaKogus(1);
                 UuendaKorviInfo();
             };
 
             p.Controls.Add(pb);
             p.Controls.Add(lblNimi);
             p.Controls.Add(lblHind);
+            p.Controls.Add(btnMiinus);
+            p.Controls.Add(txtKogus);
+            p.Controls.Add(btnPluss);
             p.Controls.Add(btn);
 
             return p;
@@ -137,7 +199,7 @@ namespace Tooted
 
         private void UuendaKorviInfo()
         {
-            lblKorv.Text = $"Ostukorv: {Ostukorv.Tukke} tk – {Ostukorv.Kokku:0.00} €";
+            lblKorv.Text = $"Ostukorv: {Ostukorv.Tukke} tk – {Ostukorv.Vahesumma:0.00} €";
         }
 
         private void tabPage1_Click(object sender, EventArgs e)

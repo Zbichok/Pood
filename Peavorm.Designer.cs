@@ -19,6 +19,7 @@
         private Button btnPood;
         private Button btnArve;
         private Button btnLogout;
+        private Button btnRull;
 
         private void InitializeComponent()
         {
@@ -27,6 +28,7 @@
             btnArve = new Button();
             github = new Button();
             btnLogout = new Button();
+            btnRull = new Button();
             SuspendLayout();
             btnTooted.Location = new Point(137, 71);
             btnTooted.Name = "btnTooted";
@@ -49,28 +51,36 @@
             btnArve.Text = "Arve";
             btnArve.UseVisualStyleBackColor = true;
             btnArve.Click += btnArve_Click;
-            btnLogout.Location = new Point(137, 221);
+            btnRull.Location = new Point(137, 221);
+            btnRull.Name = "btnRull";
+            btnRull.Size = new Size(200, 40);
+            btnRull.TabIndex = 3;
+            btnRull.Text = "Päevane rull";
+            btnRull.UseVisualStyleBackColor = true;
+            btnRull.Click += btnRull_Click;
+            btnLogout.Location = new Point(137, 271);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(200, 40);
-            btnLogout.TabIndex = 3;
+            btnLogout.TabIndex = 5;
             btnLogout.Text = "Logi välja";
             btnLogout.UseVisualStyleBackColor = true;
             btnLogout.Click += btnLogout_Click;
             github.BackgroundImage = Properties.Resources._25231;
             github.BackgroundImageLayout = ImageLayout.Stretch;
-            github.Location = new Point(211, 275);
+            github.Location = new Point(211, 335);
             github.Name = "github";
             github.Size = new Size(53, 51);
             github.TabIndex = 4;
             github.UseVisualStyleBackColor = true;
             github.Cursor = Cursors.Hand;
             github.Click += github_Click;
-            ClientSize = new Size(493, 340);
+            ClientSize = new Size(493, 400);
             Controls.Add(github);
             Controls.Add(btnTooted);
             Controls.Add(btnPood);
             Controls.Add(btnArve);
             Controls.Add(btnLogout);
+            Controls.Add(btnRull);
             Name = "Peavorm";
             Text = "Peamenüü";
             ResumeLayout(false);

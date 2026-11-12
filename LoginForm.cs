@@ -39,6 +39,7 @@ namespace Tooted
             AktiivneKasutaja.Nimi = kasutaja.Nimi;
             AktiivneKasutaja.Roll = kasutaja.Roll;
             AktiivneKasutaja.Email = kasutaja.Email;
+            AktiivneKasutaja.LaeBoonused();
 
             DialogResult = DialogResult.OK;
             Close();
