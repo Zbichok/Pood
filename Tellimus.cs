@@ -1,4 +1,4 @@
-using PdfSharpCore.Drawing;
+﻿using PdfSharpCore.Drawing;
 using PdfSharpCore.Pdf;
 using System.Text;
 
@@ -16,7 +16,7 @@ namespace Tooted
         public string? Aadress { get; init; }
         public List<string> Read { get; init; } = new();
         public List<string> Kokkuvote { get; init; } = new();
-        public float Kokku { get; init; }
+        public decimal Kokku { get; init; }
         public int Tukke { get; init; }
 
         /// <summary>Kulleri hinnanguline saabumisaeg minutites (0 = kohaletoimetuse infot pole).</summary>

@@ -1,4 +1,4 @@
-namespace Tooted
+﻿namespace Tooted
 {
     /// <summary>Lihtne ühtne välimus: hele taust, ühe fondiga, tasased nupud.</summary>
     public static class Stiil
@@ -35,6 +35,26 @@ namespace Tooted
                 default: r = v; g = p; b = q; break;
             }
             return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
+        }
+
+        /// <summary>Nupp "Peamenüü": sulgeb vormi ja viib tagasi peamenüüsse (vormid avatakse ShowDialog-iga).</summary>
+        public static Button LisaTagasiNupp(Form vorm, Point asukoht)
+        {
+            var nupp = new Button
+            {
+                Text = "← Peamenüü",
+                Location = asukoht,
+                Size = new Size(130, 32),
+                Name = "btnTagasi"
+            };
+            nupp.FlatStyle = FlatStyle.Flat;
+            nupp.FlatAppearance.BorderColor = Joon;
+            nupp.FlatAppearance.BorderSize = 1;
+            nupp.BackColor = NuppTaust;
+            nupp.Cursor = Cursors.Hand;
+            nupp.Click += (s, e) => vorm.Close();
+            vorm.Controls.Add(nupp);
+            return nupp;
         }
 
         public static void RakendaKontrollidele(Control.ControlCollection kontrollid)

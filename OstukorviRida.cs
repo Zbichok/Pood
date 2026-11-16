@@ -1,11 +1,11 @@
-namespace Tooted
+﻿namespace Tooted
 {
     public class OstukorviRida
     {
         public Toode Toode { get; set; }
         public int Kogus { get; set; }
 
-        public float Summa => Toode.Hind * Kogus;
+        public decimal Summa => Toode.Hind * Kogus;
 
         public override string ToString()
         {

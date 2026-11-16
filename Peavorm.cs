@@ -23,7 +23,14 @@ namespace Tooted
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
 
-            btnTooted.Enabled = AktiivneKasutaja.OnAdmin;
+            if (!AktiivneKasutaja.OnAdmin)
+            {
+                // Tavakasutajal Tootehaldus-nuppu ei ole: peidame ja nihutame teised nupud ülespoole
+                btnTooted.Visible = false;
+                int nihe = btnPood.Top - btnTooted.Top;
+                foreach (var nupp in new[] { btnPood, btnArve, btnRull, btnLogout })
+                    nupp.Top -= nihe;
+            }
             Text = $"Peamenüü – {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})";
 
             KaivitaRullNupuEfekt();

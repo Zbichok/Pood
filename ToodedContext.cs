@@ -11,7 +11,7 @@ namespace Tooted
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseSqlServer(
-                @"Server=(localdb)\MSSQLLocalDB;Database=TootedDBB;Trusted_Connection=True;");
+                @"Server=(localdb)\MSSQLLocalDB;Database=Tooded_DB;Trusted_Connection=True;TrustServerCertificate=True;");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -20,6 +20,7 @@ namespace Tooted
             modelBuilder.Entity<Toode>().ToTable("Toodetabel");
             modelBuilder.Entity<Kasutaja>().ToTable("Kasutajad");
             modelBuilder.Entity<Kasutaja>().Property(k => k.Saldo).HasPrecision(10, 2);
+            modelBuilder.Entity<Toode>().Property(t => t.Hind).HasPrecision(10, 2);
         }
     }
 }

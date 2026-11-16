@@ -1,4 +1,4 @@
-namespace Tooted
+﻿namespace Tooted
 {
     /// <summary>
     /// Üks ostukorv kogu rakenduse peale – säilib vormide vahel liikudes.
@@ -6,11 +6,11 @@ namespace Tooted
     /// </summary>
     public static class Ostukorv
     {
-        public const float KohaletoimetuseHind = 3.00f;
+        public const decimal KohaletoimetuseHind = 3.00m;
 
         public static List<OstukorviRida> Read { get; } = new List<OstukorviRida>();
 
-        public static float Vahesumma => Read.Sum(r => r.Summa);
+        public static decimal Vahesumma => Read.Sum(r => r.Summa);
 
         public static int Tukke => Read.Sum(r => r.Kogus);
 
@@ -24,15 +24,15 @@ namespace Tooted
             }
         }
 
-        public static float TasutaToodeSumma => TasutaRida?.Toode.Hind ?? 0f;
+        public static decimal TasutaToodeSumma => TasutaRida?.Toode.Hind ?? 0m;
 
-        public static float SoodustuseSumma =>
-            (Vahesumma - TasutaToodeSumma) * AktiivneKasutaja.Soodustus / 100f;
+        public static decimal SoodustuseSumma =>
+            Math.Round((Vahesumma - TasutaToodeSumma) * AktiivneKasutaja.Soodustus / 100m, 2);
 
-        public static float Kohaletoimetus =>
-            Read.Count == 0 || AktiivneKasutaja.TasutaKohaletoimetus ? 0f : KohaletoimetuseHind;
+        public static decimal Kohaletoimetus =>
+            Read.Count == 0 || AktiivneKasutaja.TasutaKohaletoimetus ? 0m : KohaletoimetuseHind;
 
-        public static float Kokku => Vahesumma - TasutaToodeSumma - SoodustuseSumma + Kohaletoimetus;
+        public static decimal Kokku => Vahesumma - TasutaToodeSumma - SoodustuseSumma + Kohaletoimetus;
 
         /// <summary>Read arve all: vahesumma, boonused, kohaletoimetus.</summary>
         public static List<string> Kokkuvote()

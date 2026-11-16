@@ -6,46 +6,46 @@
     /// </summary>
     public static class SeedAndmed
     {
-        private record SeedToode(string Nimi, int Kogus, float Hind, string Pilt);
+        private record SeedToode(string Nimi, int Kogus, decimal Hind, string Pilt);
         private record SeedKategooria(string Nimi, string Kirjeldus, SeedToode[] Tooted);
 
         private static readonly SeedKategooria[] Andmed =
         {
             new("Joogid", "Karastus- ja mahlajoogid", new[]
             {
-                new SeedToode("Coca-Cola 0,5L", 40, 1.49f, "cocacola.png"),
-                new SeedToode("Fanta 0,5L", 35, 1.39f, "fanta.png"),
-                new SeedToode("Sprite 0,5L", 30, 1.39f, "sprite.png"),
-                new SeedToode("Õunamahl 1L", 25, 1.99f, "Ounamahl.png"),
-                new SeedToode("Mineraalvesi 1,5L", 50, 0.89f, "mineraalvesi.png"),
+                new SeedToode("Coca-Cola 0,5L", 40, 1.49m, "cocacola.png"),
+                new SeedToode("Fanta 0,5L", 35, 1.39m, "fanta.png"),
+                new SeedToode("Sprite 0,5L", 30, 1.39m, "sprite.png"),
+                new SeedToode("Õunamahl 1L", 25, 1.99m, "Ounamahl.png"),
+                new SeedToode("Mineraalvesi 1,5L", 50, 0.89m, "mineraalvesi.png"),
             }),
             new("Maiustused", "Šokolaad ja kommid", new[]
             {
-                new SeedToode("Piimašokolaad 100g", 60, 1.79f, "piimasokolaad.png"),
-                new SeedToode("Tumešokolaad 100g", 45, 2.19f, "tumesokolaad.png"),
-                new SeedToode("Kommipakk 250g", 30, 3.49f, "kommipakk.png"),
-                new SeedToode("Marsipan 150g", 20, 2.99f, "marsipan.png"),
+                new SeedToode("Piimašokolaad 100g", 60, 1.79m, "piimasokolaad.png"),
+                new SeedToode("Tumešokolaad 100g", 45, 2.19m, "tumesokolaad.png"),
+                new SeedToode("Kommipakk 250g", 30, 3.49m, "kommipakk.png"),
+                new SeedToode("Marsipan 150g", 20, 2.99m, "marsipan.png"),
             }),
             new("Puuviljad", "Värsked puu- ja juurviljad", new[]
             {
-                new SeedToode("Õunad 1kg", 50, 1.69f, "ounad.png"),
-                new SeedToode("Banaanid 1kg", 40, 1.59f, "banaanid.png"),
-                new SeedToode("Apelsinid 1kg", 35, 2.29f, "apelsinid.png"),
-                new SeedToode("Viinamarjad 500g", 25, 2.99f, "viinamarjad.png"),
+                new SeedToode("Õunad 1kg", 50, 1.69m, "ounad.png"),
+                new SeedToode("Banaanid 1kg", 40, 1.59m, "banaanid.png"),
+                new SeedToode("Apelsinid 1kg", 35, 2.29m, "apelsinid.png"),
+                new SeedToode("Viinamarjad 500g", 25, 2.99m, "viinamarjad.png"),
             }),
             new("Piimatooted", "Piim, juust ja jogurt", new[]
             {
-                new SeedToode("Piim 2,5% 1L", 45, 1.09f, "piim.png"),
-                new SeedToode("Gouda juust 200g", 30, 3.29f, "juust.png"),
-                new SeedToode("Maasikajogurt 150g", 40, 0.79f, "jogurt.png"),
-                new SeedToode("Või 200g", 35, 2.49f, "voi.png"),
+                new SeedToode("Piim 2,5% 1L", 45, 1.09m, "piim.png"),
+                new SeedToode("Gouda juust 200g", 30, 3.29m, "juust.png"),
+                new SeedToode("Maasikajogurt 150g", 40, 0.79m, "jogurt.png"),
+                new SeedToode("Või 200g", 35, 2.49m, "voi.png"),
             }),
             new("Pagaritooted", "Värske leib ja saiakesed", new[]
             {
-                new SeedToode("Rukkileib", 30, 1.59f, "rukkileib.png"),
-                new SeedToode("Sai", 40, 0.99f, "sai.png"),
-                new SeedToode("Croissant", 25, 1.29f, "croissant.png"),
-                new SeedToode("Kaneelisnekk", 20, 1.49f, "kaneelisnekk.png"),
+                new SeedToode("Rukkileib", 30, 1.59m, "rukkileib.png"),
+                new SeedToode("Sai", 40, 0.99m, "sai.png"),
+                new SeedToode("Croissant", 25, 1.29m, "croissant.png"),
+                new SeedToode("Kaneelisnekk", 20, 1.49m, "kaneelisnekk.png"),
             }),
         };
 

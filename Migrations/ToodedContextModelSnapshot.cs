@@ -95,8 +95,9 @@ namespace Tooted.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<float>("Hind")
-                        .HasColumnType("real");
+                    b.Property<decimal>("Hind")
+                        .HasPrecision(10, 2)
+                        .HasColumnType("decimal(10,2)");
 
                     b.Property<int>("KategooriaId")
                         .HasColumnType("int");

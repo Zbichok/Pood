@@ -11,7 +11,7 @@ namespace Tooted
         public int Id { get; set; }
         public string Toodenimetus { get; set; }
         public int Kogus { get; set; }
-        public float Hind { get; set; }
+        public decimal Hind { get; set; }
         public string Pilt { get; set; }
 
         public int KategooriaId { get; set; }

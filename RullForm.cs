@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Drawing.Drawing2D;
 
 namespace Tooted
@@ -109,6 +109,7 @@ namespace Tooted
             Controls.Add(lent);
             Controls.Add(lblInfo);
             Controls.Add(btnKeera);
+            Stiil.LisaTagasiNupp(this, new Point(10, 274));
 
             Stiil.Rakenda(this);
             taust0 = BackColor;

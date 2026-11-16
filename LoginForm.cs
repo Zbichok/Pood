@@ -24,15 +24,11 @@ namespace Tooted
 
             var kasutaja = db.Kasutajad.FirstOrDefault(k => k.Email.ToLower() == email);
 
-            if (kasutaja == null)
+            // Sama teade mõlemal juhul: võõras ei saa teada, kas selline e-post on olemas
+            if (kasutaja == null || !PasswordHelper.Verify(parool, kasutaja.ParoolHash))
             {
-                lblVeateade.Text = "Vale email!";
-                return;
-            }
-
-            if (!PasswordHelper.Verify(parool, kasutaja.ParoolHash))
-            {
-                lblVeateade.Text = "Vale parool!";
+                lblVeateade.Text = "Vale e-post või parool.";
+                txtParool.Clear();
                 return;
             }
 

@@ -25,6 +25,7 @@ namespace Tooted
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
             Text = "Pood";
+            Stiil.LisaTagasiNupp(this, new Point(769, 580));
 
             if (AktiivneKasutaja.OnAdmin)
                 lblMarkus.Text = "Admin: ostud on testostud (andmeid ei muudeta).";
@@ -204,6 +205,12 @@ namespace Tooted
 
         private void tabPage1_Click(object sender, EventArgs e)
         {
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _db.Dispose();   // suleb andmebaasiühenduse
+            base.OnFormClosed(e);
         }
     }
 }

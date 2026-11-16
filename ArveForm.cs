@@ -42,6 +42,7 @@ namespace Tooted
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
+            Stiil.LisaTagasiNupp(this, new Point(520, 435));
 
             // Admin: ostud on ainult testostud (arve PDF + e-post), andmebaasi ei muudeta.
             if (AktiivneKasutaja.OnAdmin)
@@ -124,7 +125,7 @@ namespace Tooted
                 return;
             }
 
-            decimal kokku = Math.Round((decimal)Ostukorv.Kokku, 2);
+            decimal kokku = Math.Round(Ostukorv.Kokku, 2);
             decimal saldoKasutus = chkSaldo.Checked ? Math.Min(AktiivneKasutaja.Saldo, kokku) : 0m;
             decimal makstakse = kokku - saldoKasutus;
 

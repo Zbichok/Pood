@@ -27,6 +27,12 @@ namespace Tooted
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
+            Stiil.LisaTagasiNupp(this, new Point(12, 515));
+
+            var btnTyhjenda = new Button { Text = "Tühjenda väljad", Location = new Point(12, 218), Size = new Size(97, 55) };
+            btnTyhjenda.Click += (s, e) => TuhjendaVorm();
+            Controls.Add(btnTyhjenda);
+            Stiil.RakendaKontrollidele(Controls);
 
             if (!AktiivneKasutaja.OnAdmin)
             {
@@ -94,7 +100,7 @@ namespace Tooted
             UuendaFotoNupud(null);
         }
 
-        private bool LoeVorm(out int kogus, out float hind)
+        private bool LoeVorm(out int kogus, out decimal hind)
         {
             hind = 0;
 
@@ -111,11 +117,13 @@ namespace Tooted
                 return false;
             }
 
-            if (!float.TryParse(txtHind.Text.Replace(',', '.'), System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out hind) || hind < 0)
+            if (!decimal.TryParse(txtHind.Text.Replace(',', '.'), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out hind) || hind < 0)
             {
                 MessageBox.Show("Vale hind!");
                 return false;
             }
+
+            hind = Math.Round(hind, 2);
 
             if (cmbKategooria.SelectedValue == null)
             {
@@ -134,7 +142,7 @@ namespace Tooted
 
         private void btnLisa_Click(object sender, EventArgs e)
         {
-            if (!LoeVorm(out int kogus, out float hind)) return;
+            if (!LoeVorm(out int kogus, out decimal hind)) return;
 
             var uus = new Toode
             {
@@ -398,7 +406,7 @@ namespace Tooted
                 return;
             }
 
-            if (!LoeVorm(out int kogus, out float hind)) return;
+            if (!LoeVorm(out int kogus, out decimal hind)) return;
 
             var toode = _db.Toodetabel.Find(id.Value);
             if (toode == null) return;
@@ -545,6 +553,12 @@ namespace Tooted
 
         private void cmbKategooria_SelectedIndexChanged(object sender, EventArgs e)
         {
+        }
+
+        protected override void OnFormClosed(FormClosedEventArgs e)
+        {
+            _db.Dispose();   // suleb andmebaasiühenduse
+            base.OnFormClosed(e);
         }
     }
 }
