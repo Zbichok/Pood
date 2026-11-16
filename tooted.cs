@@ -35,7 +35,11 @@ namespace Tooted
                 btnKustuta.Enabled = false;
                 btnLisaKategooria.Enabled = false;
                 btnKustutaKategooria.Enabled = false;
+                btnFoto.Enabled = false;
+                btnKustutaFoto.Enabled = false;
             }
+
+            UuendaFotoNupud(null);
         }
 
         private void LaeKategooriad()
@@ -87,6 +91,7 @@ namespace Tooted
             valitudPilt = null;
             NaitaPilti(null);
             dataGridTooted.ClearSelection();
+            UuendaFotoNupud(null);
         }
 
         private bool LoeVorm(out int kogus, out float hind)
@@ -379,7 +384,9 @@ namespace Tooted
                 cmbKategooria.SelectedValue = toode.KategooriaId;
 
             valitudPilt = null;
-            NaitaPilti(Pildid.Lae(rida.Cells["Pilt"].Value?.ToString()));
+            string? pilt = rida.Cells["Pilt"].Value?.ToString();
+            NaitaPilti(Pildid.Lae(pilt));
+            UuendaFotoNupud(pilt);
         }
 
         private void btnUuenda_Click(object sender, EventArgs e)
@@ -429,6 +436,104 @@ namespace Tooted
             _db.SaveChanges();
             LaeTooted();
             TuhjendaVorm();
+        }
+
+        // ---------- Foto lisamine / vahetamine / kustutamine valitud tootel ----------
+
+        /// <summary>Nupu tekst: "Lisa foto", kui fotot pole, muidu "Muuda foto".</summary>
+        private void UuendaFotoNupud(string? pilt)
+        {
+            bool onFoto = !string.IsNullOrEmpty(pilt);
+            btnFoto.Text = onFoto ? "Muuda foto" : "Lisa foto";
+            btnKustutaFoto.Visible = onFoto;
+        }
+
+        /// <summary>Pärast tabeli uuesti laadimist valib sama toote rea tagasi.</summary>
+        private void ValiRida(int id)
+        {
+            foreach (DataGridViewRow r in dataGridTooted.Rows)
+            {
+                if (r.Cells["Id"].Value is int rid && rid == id)
+                {
+                    dataGridTooted.ClearSelection();
+                    r.Selected = true;
+                    dataGridTooted.CurrentCell = r.Cells["Toodenimetus"];
+                    return;
+                }
+            }
+        }
+
+        private void btnFoto_Click(object? sender, EventArgs e)
+        {
+            int? id = ValitudId();
+            if (id == null)
+            {
+                MessageBox.Show("Vali enne tabelist toode!");
+                return;
+            }
+
+            var toode = _db.Toodetabel.Find(id.Value);
+            if (toode == null) return;
+
+            using var ofd = new OpenFileDialog();
+            ofd.Title = $"Vali foto: {toode.Toodenimetus}";
+            ofd.Filter = "Pildid|*.jpg;*.jpeg;*.png";
+
+            if (ofd.ShowDialog() != DialogResult.OK) return;
+
+            try
+            {
+                // Kontroll, et fail on tõesti pilt (muidu poes ei laeks)
+                using (var test = Pildid.LaeFailist(ofd.FileName))
+                {
+                    if (test == null)
+                    {
+                        MessageBox.Show("Faili ei saanud pildina avada.");
+                        return;
+                    }
+                }
+
+                toode.Pilt = Pildid.Salvesta(ofd.FileName);
+                _db.SaveChanges();           // salvestub kohe, "Uuenda" vajutama ei pea
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Foto salvestamine ebaõnnestus: " + ex.Message);
+                return;
+            }
+
+            valitudPilt = null;
+            LaeTooted();
+            ValiRida(toode.Id);
+            NaitaPilti(Pildid.Lae(toode.Pilt));
+            UuendaFotoNupud(toode.Pilt);
+        }
+
+        private void btnKustutaFoto_Click(object? sender, EventArgs e)
+        {
+            int? id = ValitudId();
+            if (id == null)
+            {
+                MessageBox.Show("Vali enne tabelist toode!");
+                return;
+            }
+
+            var toode = _db.Toodetabel.Find(id.Value);
+            if (toode == null || string.IsNullOrEmpty(toode.Pilt)) return;
+
+            if (MessageBox.Show($"Kas eemaldada toote \"{toode.Toodenimetus}\" foto?", "Kinnitamine",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
+            // Failile endale ei puututa (seda võib kasutada mõni teine toode), eemaldame ainult seose.
+            toode.Pilt = "";
+            _db.SaveChanges();
+
+            valitudPilt = null;
+            LaeTooted();
+            ValiRida(toode.Id);
+            NaitaPilti(null);
+            UuendaFotoNupud(null);
         }
 
         private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)

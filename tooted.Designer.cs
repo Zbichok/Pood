@@ -31,6 +31,8 @@
             btnLisa = new Button();
             btnUuenda = new Button();
             btnKustuta = new Button();
+            btnFoto = new Button();
+            btnKustutaFoto = new Button();
             picPilt = new PictureBox();
             dataGridTooted = new DataGridView();
             ((System.ComponentModel.ISupportInitialize)picPilt).BeginInit();
@@ -127,6 +129,22 @@
             btnKustuta.Text = "Kustuta";
             btnKustuta.UseVisualStyleBackColor = true;
             btnKustuta.Click += btnKustuta_Click;
+            btnFoto.Cursor = Cursors.Hand;
+            btnFoto.Location = new Point(676, 32);
+            btnFoto.Name = "btnFoto";
+            btnFoto.Size = new Size(165, 40);
+            btnFoto.TabIndex = 18;
+            btnFoto.Text = "Lisa foto";
+            btnFoto.UseVisualStyleBackColor = true;
+            btnFoto.Click += btnFoto_Click;
+            btnKustutaFoto.Cursor = Cursors.Hand;
+            btnKustutaFoto.Location = new Point(676, 80);
+            btnKustutaFoto.Name = "btnKustutaFoto";
+            btnKustutaFoto.Size = new Size(165, 40);
+            btnKustutaFoto.TabIndex = 19;
+            btnKustutaFoto.Text = "Kustuta foto";
+            btnKustutaFoto.UseVisualStyleBackColor = true;
+            btnKustutaFoto.Click += btnKustutaFoto_Click;
             picPilt.Location = new Point(437, 32);
             picPilt.Name = "picPilt";
             picPilt.Size = new Size(233, 180);
@@ -143,6 +161,8 @@
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(857, 560);
             Controls.Add(dataGridTooted);
+            Controls.Add(btnKustutaFoto);
+            Controls.Add(btnFoto);
             Controls.Add(picPilt);
             Controls.Add(btnKustuta);
             Controls.Add(btnUuenda);
@@ -185,6 +205,8 @@
         private Button btnLisa;
         private Button btnUuenda;
         private Button btnKustuta;
+        private Button btnFoto;
+        private Button btnKustutaFoto;
         private PictureBox picPilt;
         private DataGridView dataGridTooted;
     }

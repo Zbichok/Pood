@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Drawing;
 using System.IO;
 
@@ -45,12 +45,26 @@ namespace Tooted
             string failinimi = Path.GetFileName(allikas);
             string siht = Path.Combine(Kaust, failinimi);
 
-            if (!string.Equals(Path.GetFullPath(allikas), Path.GetFullPath(siht),
+            // Fail on juba Images kaustas (nt valiti sealt) – kopeerida pole vaja
+            if (string.Equals(Path.GetFullPath(allikas), Path.GetFullPath(siht),
                     StringComparison.OrdinalIgnoreCase))
+                return failinimi;
+
+            // Sama nimega fail on olemas, aga see on teine pilt: ei kirjuta üle,
+            // muidu muutuks ka teise toote foto. Teeme unikaalse nime (nimi_1.png jne).
+            if (File.Exists(siht))
             {
-                File.Copy(allikas, siht, true);
+                string nimi = Path.GetFileNameWithoutExtension(failinimi);
+                string laiend = Path.GetExtension(failinimi);
+                int n = 1;
+                do
+                {
+                    failinimi = $"{nimi}_{n++}{laiend}";
+                    siht = Path.Combine(Kaust, failinimi);
+                } while (File.Exists(siht));
             }
 
+            File.Copy(allikas, siht);
             return failinimi;
         }
     }
