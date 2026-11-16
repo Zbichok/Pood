@@ -8,6 +8,7 @@ namespace Tooted
         static void Main()
         {
             ApplicationConfiguration.Initialize();
+            Kaustad.Loo();
 
             try
             {
@@ -70,19 +71,6 @@ namespace Tooted
             }
 
             SeedAndmed.Lisa(db);
-
-            if (!db.Kasutajad.Any(k => k.Email.ToLower() == "timoha@pro.ee"))
-            {
-                db.Kasutajad.Add(new Kasutaja
-                {
-                    Nimi = "Timoha",
-                    Email = "Timoha@pro.ee",
-                    ParoolHash = PasswordHelper.Hash("123pro"),
-                    Roll = "admin"
-                });
-
-                db.SaveChanges();
-            }
         }
     }
 }

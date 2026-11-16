@@ -11,7 +11,7 @@ namespace Tooted
     {
         public int Id { get; set; }
         public string Kategooria_nimetus { get; set; }
-        public string Kirjeldus { get; set; }
+        public string? Kirjeldus { get; set; }
 
         public ICollection<Toode> Tooded { get; set; }
     }

@@ -31,7 +31,8 @@ namespace Tooted.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(450)
+                        .HasColumnType("nvarchar(450)");
 
                     b.Property<string>("Nimi")
                         .IsRequired()
@@ -63,6 +64,9 @@ namespace Tooted.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Email")
+                        .IsUnique();
+
                     b.ToTable("Kasutajad", (string)null);
                 });
 
@@ -79,7 +83,6 @@ namespace Tooted.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Kirjeldus")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
@@ -106,7 +109,6 @@ namespace Tooted.Migrations
                         .HasColumnType("int");
 
                     b.Property<string>("Pilt")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Toodenimetus")

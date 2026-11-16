@@ -21,6 +21,10 @@ namespace Tooted
             modelBuilder.Entity<Kasutaja>().ToTable("Kasutajad");
             modelBuilder.Entity<Kasutaja>().Property(k => k.Saldo).HasPrecision(10, 2);
             modelBuilder.Entity<Toode>().Property(t => t.Hind).HasPrecision(10, 2);
+
+            // Sama e-postiga kahte kasutajat ei saa olla (450 = SQL Serveri indeksi pikkuse piir)
+            modelBuilder.Entity<Kasutaja>().Property(k => k.Email).HasMaxLength(450);
+            modelBuilder.Entity<Kasutaja>().HasIndex(k => k.Email).IsUnique();
         }
     }
 }

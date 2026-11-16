@@ -84,7 +84,7 @@ namespace Tooted
                 Height = 120,
                 SizeMode = PictureBoxSizeMode.Zoom,
                 Location = new Point(18, 5),
-                Image = Pildid.Lae(t.Pilt)
+                Image = Kaustad.LaePilt(t.Pilt)
             };
 
             Label lblNimi = new Label

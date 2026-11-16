@@ -79,7 +79,7 @@ namespace Tooted
             if (ofd.ShowDialog() == DialogResult.OK)
             {
                 valitudPilt = ofd.FileName;
-                NaitaPilti(Pildid.LaeFailist(valitudPilt));
+                NaitaPilti(Kaustad.LaeFailist(valitudPilt));
             }
         }
 
@@ -150,7 +150,7 @@ namespace Tooted
                 Kogus = kogus,
                 Hind = hind,
                 KategooriaId = (int)cmbKategooria.SelectedValue,
-                Pilt = valitudPilt != null ? Pildid.Salvesta(valitudPilt) : ""
+                Pilt = valitudPilt != null ? Kaustad.Salvesta(valitudPilt) : ""
             };
 
             _db.Toodetabel.Add(uus);
@@ -393,7 +393,7 @@ namespace Tooted
 
             valitudPilt = null;
             string? pilt = rida.Cells["Pilt"].Value?.ToString();
-            NaitaPilti(Pildid.Lae(pilt));
+            NaitaPilti(Kaustad.LaePilt(pilt));
             UuendaFotoNupud(pilt);
         }
 
@@ -417,7 +417,7 @@ namespace Tooted
             toode.KategooriaId = (int)cmbKategooria.SelectedValue;
 
             if (valitudPilt != null)
-                toode.Pilt = Pildid.Salvesta(valitudPilt);
+                toode.Pilt = Kaustad.Salvesta(valitudPilt);
 
             _db.SaveChanges();
             LaeTooted();
@@ -492,7 +492,7 @@ namespace Tooted
             try
             {
                 // Kontroll, et fail on tõesti pilt (muidu poes ei laeks)
-                using (var test = Pildid.LaeFailist(ofd.FileName))
+                using (var test = Kaustad.LaeFailist(ofd.FileName))
                 {
                     if (test == null)
                     {
@@ -501,7 +501,7 @@ namespace Tooted
                     }
                 }
 
-                toode.Pilt = Pildid.Salvesta(ofd.FileName);
+                toode.Pilt = Kaustad.Salvesta(ofd.FileName);
                 _db.SaveChanges();           // salvestub kohe, "Uuenda" vajutama ei pea
             }
             catch (Exception ex)
@@ -513,7 +513,7 @@ namespace Tooted
             valitudPilt = null;
             LaeTooted();
             ValiRida(toode.Id);
-            NaitaPilti(Pildid.Lae(toode.Pilt));
+            NaitaPilti(Kaustad.LaePilt(toode.Pilt));
             UuendaFotoNupud(toode.Pilt);
         }
 

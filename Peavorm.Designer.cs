@@ -26,7 +26,7 @@
             btnTooted = new Button();
             btnPood = new Button();
             btnArve = new Button();
-            github = new Button();
+            github = new PictureBox();
             btnLogout = new Button();
             btnRull = new Button();
             SuspendLayout();
@@ -65,15 +65,15 @@
             btnLogout.Text = "Logi välja";
             btnLogout.UseVisualStyleBackColor = true;
             btnLogout.Click += btnLogout_Click;
-            github.BackgroundImage = Properties.Resources._25231;
-            github.BackgroundImageLayout = ImageLayout.Stretch;
+            github.Image = Properties.Resources._25231;
+            github.SizeMode = PictureBoxSizeMode.Zoom;
             github.Location = new Point(211, 335);
             github.Name = "github";
             github.Size = new Size(53, 51);
             github.TabIndex = 4;
-            github.UseVisualStyleBackColor = true;
+            github.TabStop = false;
             github.Cursor = Cursors.Hand;
-            github.Click += github_Click;
+            github.Click += pbGithub_Click;
             ClientSize = new Size(493, 400);
             Controls.Add(github);
             Controls.Add(btnTooted);
@@ -88,6 +88,6 @@
 
         #endregion
 
-        private Button github;
+        private PictureBox github;
     }
 }

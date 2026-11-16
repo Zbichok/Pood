@@ -26,7 +26,6 @@ namespace Tooted
         private const string saatjaEmail = "xxxx";
         private const string rakenduseParool = "xxxx";
 
-        private const string Kaust = "Arved";
 
         // Rulli boonuste jaoks (luuakse koodis, vt LisaBoonusKontrollid)
         private readonly Label lblKokkuvote = new Label();
@@ -203,7 +202,7 @@ namespace Tooted
         // ------------------------------------------------------------------
         private string LooPdf()
         {
-            string failinimi = Path.Combine(Kaust, $"Arve_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
+            string failinimi = Path.Combine(Kaustad.Arved, $"Arve_{DateTime.Now:yyyyMMdd_HHmmss}.pdf");
             ChekiPdf.Loo(Tellimus.Praegusest(), failinimi);
             return failinimi;
         }

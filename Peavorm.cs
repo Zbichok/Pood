@@ -33,6 +33,7 @@ namespace Tooted
             }
             Text = $"Peamenüü – {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})";
 
+            new ToolTip().SetToolTip(github, "GitHub");
             KaivitaRullNupuEfekt();
         }
 
@@ -127,15 +128,18 @@ namespace Tooted
             arve.ShowDialog();
         }
 
-        private void github_Click(object sender, EventArgs e)
+        // GitHubi ikoon on PictureBox (mitte nupp). Link avatakse Windowsi Exploreri kaudu,
+        // see avab aadressi vaikebrauseris.
+        private void pbGithub_Click(object? sender, EventArgs e)
+        {
+            AvaLink("https://github.com/Zbichok?tab=repositories");
+        }
+
+        private static void AvaLink(string url)
         {
             try
             {
-                System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo
-                {
-                    FileName = "https://github.com/Zbichok?tab=repositories",
-                    UseShellExecute = true
-                });
+                System.Diagnostics.Process.Start("explorer.exe", url);
             }
             catch (Exception ex)
             {
