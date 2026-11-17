@@ -6,7 +6,7 @@ using System.Windows.Forms;
 
 namespace Tooted
 {
-    public partial class Form1 : Form
+    public partial class Form3 : Form
     {
         private readonly ToodedContext _db;
 
@@ -14,7 +14,7 @@ namespace Tooted
         private const int KaartKorgus = 262;
         private const int Veerge = 5;
 
-        public Form1()
+        public Form3()
         {
             InitializeComponent();
             _db = new ToodedContext();
@@ -86,6 +86,11 @@ namespace Tooted
                 Location = new Point(18, 5),
                 Image = Kaustad.LaePilt(t.Pilt)
             };
+
+            // Klikk pildil näitab toote infot
+            pb.Cursor = Cursors.Hand;
+            pb.Click += (s, e) => MessageBox.Show(
+                $"{t.Toodenimetus}\nHind: {t.Hind:0.00} €\nLaos: {t.Kogus} tk", "Toode");
 
             Label lblNimi = new Label
             {

@@ -10,8 +10,9 @@ namespace Tooted
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer(
-                @"Server=(localdb)\MSSQLLocalDB;Database=Tooded_DB;Trusted_Connection=True;TrustServerCertificate=True;");
+            // SQLite: andmebaas on üks fail kasutaja kaustas, eraldi serverit pole vaja
+            Directory.CreateDirectory(Kaustad.Juur);
+            optionsBuilder.UseSqlite($"Data Source={Path.Combine(Kaustad.Juur, "tooded.db")}");
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -22,7 +23,7 @@ namespace Tooted
             modelBuilder.Entity<Kasutaja>().Property(k => k.Saldo).HasPrecision(10, 2);
             modelBuilder.Entity<Toode>().Property(t => t.Hind).HasPrecision(10, 2);
 
-            // Sama e-postiga kahte kasutajat ei saa olla (450 = SQL Serveri indeksi pikkuse piir)
+            // Sama e-postiga kahte kasutajat ei saa olla (450 = SQL Serveri indeksi pikkuse piir, SQLite'is pole vaja, aga ei sega)
             modelBuilder.Entity<Kasutaja>().Property(k => k.Email).HasMaxLength(450);
             modelBuilder.Entity<Kasutaja>().HasIndex(k => k.Email).IsUnique();
         }

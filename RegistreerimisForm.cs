@@ -12,6 +12,7 @@ namespace Tooted
         public RegistreerimisForm()
         {
             InitializeComponent();
+            AcceptButton = btnRegistreeru;   // Enter vajutab "Registreeru"
             StartPosition = FormStartPosition.CenterParent;
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;

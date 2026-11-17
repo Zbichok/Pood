@@ -2,7 +2,7 @@
 
 namespace Tooted
 {
-    partial class Form1
+    partial class Form3
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -61,7 +61,7 @@ namespace Tooted
             Controls.Add(tabpood);
             Controls.Add(lblKorv);
             Controls.Add(lblMarkus);
-            Name = "Form1";
+            Name = "Form3";
             Text = "Form1";
             tabpood.ResumeLayout(false);
             ResumeLayout(false);

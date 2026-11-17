@@ -148,6 +148,18 @@ namespace Tooted
                     return;
                 }
 
+                // Laoseis: kontrollime ja vähendame (kui keegi jõudis vahepeal ära osta, ei jätka)
+                foreach (var rida in Ostukorv.Read)
+                {
+                    var ladu = db.Toodetabel.Find(rida.Toode.Id);
+                    if (ladu == null || ladu.Kogus < rida.Kogus)
+                    {
+                        MessageBox.Show($"Toodet \"{rida.Toode.Toodenimetus}\" on laos ainult {ladu?.Kogus ?? 0} tk. Muuda ostukorvi.");
+                        return;
+                    }
+                    ladu.Kogus -= rida.Kogus;
+                }
+
                 k.Saldo -= saldoKasutus;
                 k.Soodustus = 0;                       // soodustus on kasutatud
                 k.TasutaKohaletoimetus = false;        // tasuta kohaletoimetus on kasutatud

@@ -1,6 +1,6 @@
 ﻿namespace Tooted
 {
-    partial class Peavorm
+    partial class FormMain
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -81,7 +81,7 @@
             Controls.Add(btnArve);
             Controls.Add(btnLogout);
             Controls.Add(btnRull);
-            Name = "Peavorm";
+            Name = "FormMain";
             Text = "Peamenüü";
             ResumeLayout(false);
         }

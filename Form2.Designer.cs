@@ -1,6 +1,6 @@
 ﻿namespace Tooted
 {
-    partial class tooted
+    partial class Form2
     {
         private System.ComponentModel.IContainer components = null;
 
@@ -180,8 +180,8 @@
             Controls.Add(txtNimetus);
             MaximizeBox = false;
             MinimizeBox = false;
-            Name = "tooted";
-            Text = "Form1";
+            Name = "Form2";
+            Text = "Toodete haldus";
             ((System.ComponentModel.ISupportInitialize)picPilt).EndInit();
             ((System.ComponentModel.ISupportInitialize)dataGridTooted).EndInit();
             ResumeLayout(false);

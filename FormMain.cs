@@ -10,12 +10,12 @@ using System.Windows.Forms;
 
 namespace Tooted
 {
-    public partial class Peavorm : Form
+    public partial class FormMain : Form
     {
         /// <summary>true, kui kasutaja vajutas "Logi välja" (mitte akna X-i).</summary>
         public bool LogiValja { get; private set; }
 
-        public Peavorm()
+        public FormMain()
         {
             InitializeComponent();
             StartPosition = FormStartPosition.CenterScreen;
@@ -112,13 +112,13 @@ namespace Tooted
 
         private void btnTooted_Click(object sender, EventArgs e)
         {
-            tooted f = new tooted();
+            Form2 f = new Form2();
             f.ShowDialog();
         }
 
         private void btnPood_Click(object sender, EventArgs e)
         {
-            Form1 poodForm = new Form1();
+            Form3 poodForm = new Form3();
             poodForm.ShowDialog();
         }
 

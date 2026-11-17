@@ -13,6 +13,7 @@ namespace Tooted
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
+            AcceptButton = btnLogin;   // Enter vajutab "Logi sisse"
         }
 
         private void btnLogin_Click(object sender, EventArgs e)

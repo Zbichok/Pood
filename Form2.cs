@@ -6,11 +6,11 @@ using System.Windows.Forms;
 
 namespace Tooted
 {
-    public partial class tooted : Form
+    public partial class Form2 : Form
     {
         private readonly ToodedContext _db;
         private string? valitudPilt;
-        public tooted()
+        public Form2()
         {
             InitializeComponent();
             _db = new ToodedContext();

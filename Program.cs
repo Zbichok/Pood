@@ -17,7 +17,7 @@ namespace Tooted
             catch (Exception ex)
             {
                 MessageBox.Show("Andmebaasi viga: " + ex.Message +
-                    "\n\nKas tegid Add-Migration LisaKasutajad ja Update-Database?");
+                    "\n\nKas kaust Migrations on olemas (Add-Migration InitialCreate)?");
                 return;
             }
 
@@ -32,7 +32,7 @@ namespace Tooted
 
                 Ostukorv.Tuhjenda();
 
-                using var peavorm = new Peavorm();
+                using var peavorm = new FormMain();
                 Application.Run(peavorm);
 
                 if (!peavorm.LogiValja)

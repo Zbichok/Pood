@@ -106,6 +106,10 @@ namespace Tooted
 
     public static class ChekiPdf
     {
+        // Unicode kodeering, et õ, ä, ö, ü ja € trükiksid PDF-is õigesti
+        private static XFont Fnt(double suurus) =>
+            new XFont("Verdana", suurus, XFontStyle.Regular, new XPdfFontOptions(PdfFontEncoding.Unicode));
+
         public static void Loo(Tellimus t, string tee)
         {
             string? kaust = Path.GetDirectoryName(tee);
@@ -116,8 +120,8 @@ namespace Tooted
             PdfPage page = document.AddPage();
             XGraphics gfx = XGraphics.FromPdfPage(page);
 
-            XFont font = new XFont("Verdana", 12);
-            XFont suur = new XFont("Verdana", 14);
+            XFont font = Fnt(12);
+            XFont suur = Fnt(14);
             double y = 20;
 
             void UusLeht()
@@ -138,7 +142,7 @@ namespace Tooted
                 y += samm;
             }
 
-            gfx.DrawString($"Arve nr {t.Number}", new XFont("Verdana", 20), XBrushes.Black,
+            gfx.DrawString($"Arve nr {t.Number}", Fnt(20), XBrushes.Black,
                 new XRect(0, y, page.Width, 40), XStringFormats.TopCenter);
             y = 60;
 
