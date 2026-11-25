@@ -27,16 +27,14 @@ namespace Tooted
         private const string rakenduseParool = "xxxx";
 
 
-        // Rulli boonuste jaoks (luuakse koodis, vt LisaBoonusKontrollid)
+        // Kontrollid, mis luuakse koodis (vt LisaKontrollid)
         private readonly Label lblKokkuvote = new Label();
-        private readonly Label lblSaldo = new Label();
-        private readonly CheckBox chkSaldo = new CheckBox();
         private readonly Button btnMaksa = new Button();
 
         public ArveForm()
         {
             InitializeComponent();
-            LisaBoonusKontrollid();
+            LisaKontrollid();
             StartPosition = FormStartPosition.CenterScreen;
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -46,15 +44,15 @@ namespace Tooted
             // Admin: ostud on ainult testostud (arve PDF + e-post), andmebaasi ei muudeta.
             if (AktiivneKasutaja.OnAdmin)
             {
-                btnMaksa.Text = "Testost";
-                chkSaldo.Visible = false;
-                lblMarkus.Text = "Admin: testost ei muuda andmebaasi, saldot ega ostukorvi.";
+                btnMaksa.Text = Keel.T("Testost", "Тестовая покупка", "Test purchase");
+                lblMarkus.Text = Keel.T("Admin: testost ei muuda andmebaasi ega ostukorvi.", "Админ: тестовая покупка не меняет базу и корзину.", "Admin: test purchase does not change the database or cart.");
             }
 
             UuendaOstukorvi();
+            Paiguta();
         }
 
-        private void LisaBoonusKontrollid()
+        private void LisaKontrollid()
         {
             ClientSize = new Size(670, 480);
 
@@ -65,22 +63,12 @@ namespace Tooted
             lblKokku.Location = new Point(20, 410);
             lblMarkus.Location = new Point(20, 445);
 
-            lblSaldo.AutoSize = true;
-            lblSaldo.Location = new Point(480, 190);
-
-            chkSaldo.Text = "Kasuta saldot";
-            chkSaldo.Checked = true;
-            chkSaldo.AutoSize = true;
-            chkSaldo.Location = new Point(480, 215);
-
-            btnMaksa.Text = "Maksa";
+            btnMaksa.Text = Keel.T("Maksa", "Оплатить", "Pay");
             btnMaksa.Location = new Point(480, 245);
             btnMaksa.Size = new Size(160, 35);
             btnMaksa.Click += btnMaksa_Click;
 
             Controls.Add(lblKokkuvote);
-            Controls.Add(lblSaldo);
-            Controls.Add(chkSaldo);
             Controls.Add(btnMaksa);
         }
 
@@ -91,18 +79,17 @@ namespace Tooted
                 listOstukorv.Items.Add(rida);
 
             lblKokkuvote.Text = string.Join(Environment.NewLine, Ostukorv.Kokkuvote());
-            lblKokku.Text = $"Kokku: {Ostukorv.Kokku:0.00} €";
-            lblSaldo.Text = $"Saldo: {AktiivneKasutaja.Saldo:0.00} €";
+            lblKokku.Text = Keel.T($"Kokku: {Ostukorv.Kokku:0.00} €", $"Итого: {Ostukorv.Kokku:0.00} €", $"Total: {Ostukorv.Kokku:0.00} €");
         }
 
         // ------------------------------------------------------------------
-        // Maksmine: saldo, boonused kasutatakse ära, ostukorv tühjendatakse
+        // Maksmine: laoseis väheneb, ostukorv tühjendatakse
         // ------------------------------------------------------------------
         private void btnMaksa_Click(object sender, EventArgs e)
         {
             if (Ostukorv.Read.Count == 0)
             {
-                MessageBox.Show("Ostukorv on tühi.");
+                MessageBox.Show(Keel.T("Ostukorv on tühi.", "Корзина пуста.", "The cart is empty."));
                 return;
             }
 
@@ -112,10 +99,10 @@ namespace Tooted
 
             if (AktiivneKasutaja.OnAdmin)
             {
-                // Testost: andmebaasi, saldot ega ostukorvi ei muudeta
+                // Testost: andmebaasi ega ostukorvi ei muudeta
                 if (MessageBox.Show(
-                        "Testost: andmebaasi, saldot ega ostukorvi ei muudeta.\n\nJätka?",
-                        "Testost", MessageBoxButtons.YesNo) != DialogResult.Yes)
+                        Keel.T("Testost: andmebaasi ega ostukorvi ei muudeta.\n\nJätka?", "Тестовая покупка: база и корзина не изменятся.\n\nПродолжить?", "Test purchase: database and cart will not change.\n\nContinue?"),
+                        Keel.T("Testost", "Тестовая покупка", "Test purchase"), MessageBoxButtons.YesNo) != DialogResult.Yes)
                     return;
 
                 var test = Tellimus.Praegusest(aadress, kuller: true);
@@ -125,56 +112,40 @@ namespace Tooted
             }
 
             decimal kokku = Math.Round(Ostukorv.Kokku, 2);
-            decimal saldoKasutus = chkSaldo.Checked ? Math.Min(AktiivneKasutaja.Saldo, kokku) : 0m;
-            decimal makstakse = kokku - saldoKasutus;
 
             var vastus = MessageBox.Show(
-                $"Kokku: {kokku:0.00} €\nSaldost: {saldoKasutus:0.00} €\nMakstakse: {makstakse:0.00} €\n\nKinnita ost?",
-                "Maksmine", MessageBoxButtons.YesNo);
+                Keel.T($"Kokku: {kokku:0.00} €\n\nKinnita ost?", $"Итого: {kokku:0.00} €\n\nПодтвердить покупку?", $"Total: {kokku:0.00} €\n\nConfirm purchase?"),
+                Keel.T("Maksmine", "Оплата", "Payment"), MessageBoxButtons.YesNo);
             if (vastus != DialogResult.Yes) return;
 
-            // Hetktõmmis enne ostukorvi tühjendamist ja boonuste kasutamist
+            // Hetktõmmis enne ostukorvi tühjendamist
             var tellimus = Tellimus.Praegusest(aadress, kuller: true);
-            tellimus.SaldoKasutus = saldoKasutus;
-            tellimus.Makstud = makstakse;
+            tellimus.Makstud = kokku;
 
             try
             {
                 using var db = new ToodedContext();
-                var k = db.Kasutajad.FirstOrDefault(x => x.Email == AktiivneKasutaja.Email);
-                if (k == null)
-                {
-                    MessageBox.Show("Kasutajat ei leitud.");
-                    return;
-                }
-
                 // Laoseis: kontrollime ja vähendame (kui keegi jõudis vahepeal ära osta, ei jätka)
                 foreach (var rida in Ostukorv.Read)
                 {
                     var ladu = db.Toodetabel.Find(rida.Toode.Id);
                     if (ladu == null || ladu.Kogus < rida.Kogus)
                     {
-                        MessageBox.Show($"Toodet \"{rida.Toode.Toodenimetus}\" on laos ainult {ladu?.Kogus ?? 0} tk. Muuda ostukorvi.");
+                        MessageBox.Show(Keel.T($"Toodet \"{rida.Toode.Toodenimetus}\" on laos ainult {ladu?.Kogus ?? 0} tk. Muuda ostukorvi.", $"Товара \"{rida.Toode.Toodenimetus}\" осталось {ladu?.Kogus ?? 0} шт. Измените корзину.", $"Only {ladu?.Kogus ?? 0} pcs of \"{rida.Toode.Toodenimetus}\" remain. Update the cart."));
                         return;
                     }
                     ladu.Kogus -= rida.Kogus;
                 }
 
-                k.Saldo -= saldoKasutus;
-                k.Soodustus = 0;                       // soodustus on kasutatud
-                k.TasutaKohaletoimetus = false;        // tasuta kohaletoimetus on kasutatud
-                if (Ostukorv.TasutaRida != null)
-                    k.TasutaToodeId = null;            // tasuta toode on kasutatud
                 db.SaveChanges();
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Maksmine ebaõnnestus: " + ex.Message);
+                MessageBox.Show(Keel.T("Maksmine ebaõnnestus: ", "Не удалось оплатить: ", "Payment failed: ") + ex.Message);
                 return;
             }
 
             Ostukorv.Tuhjenda();
-            AktiivneKasutaja.LaeBoonused();
             UuendaOstukorvi();
 
             // 2) "Palun oota" 1-2 sekundit, 3) aitäh + tšekk
@@ -186,8 +157,8 @@ namespace Tooted
         {
             if (listOstukorv.SelectedItem is not OstukorviRida rida) return;
 
-            if (MessageBox.Show($"Eemaldada \"{rida.Toode.Toodenimetus}\" korvist?",
-                    "Ostukorv", MessageBoxButtons.YesNo) == DialogResult.Yes)
+            if (MessageBox.Show(Keel.T($"Eemaldada \"{rida.Toode.Toodenimetus}\" korvist?", $"Удалить \"{rida.Toode.Toodenimetus}\" из корзины?", $"Remove \"{rida.Toode.Toodenimetus}\" from the cart?"),
+                    Keel.T("Ostukorv", "Корзина", "Cart"), MessageBoxButtons.YesNo) == DialogResult.Yes)
             {
                 Ostukorv.Eemalda(rida);
                 UuendaOstukorvi();
@@ -198,7 +169,7 @@ namespace Tooted
         {
             if (listOstukorv.SelectedItem == null)
             {
-                MessageBox.Show("Vali rida, mida eemaldada.");
+                MessageBox.Show(Keel.T("Vali rida, mida eemaldada.", "Выберите строку для удаления.", "Select an item to remove."));
                 return;
             }
             EemaldaValitud();
@@ -223,18 +194,18 @@ namespace Tooted
         {
             if (Ostukorv.Read.Count == 0)
             {
-                MessageBox.Show("Ostukorv on tühi.");
+                MessageBox.Show(Keel.T("Ostukorv on tühi.", "Корзина пуста.", "The cart is empty."));
                 return;
             }
 
             try
             {
                 string tee = LooPdf();
-                MessageBox.Show($"PDF on loodud:\n{tee}");
+                MessageBox.Show(Keel.T($"PDF on loodud:\n{tee}", $"PDF создан:\n{tee}", $"PDF created:\n{tee}"));
             }
             catch (Exception ex)
             {
-                MessageBox.Show("PDF loomine ebaõnnestus: " + ex.Message);
+                MessageBox.Show(Keel.T("PDF loomine ebaõnnestus: ", "Не удалось создать PDF: ", "PDF generation failed: ") + ex.Message);
             }
         }
 
@@ -250,7 +221,7 @@ namespace Tooted
         {
             if (Ostukorv.Read.Count == 0)
             {
-                MessageBox.Show("Ostukorv on tühi.");
+                MessageBox.Show(Keel.T("Ostukorv on tühi.", "Корзина пуста.", "The cart is empty."));
                 return;
             }
 
@@ -282,8 +253,8 @@ namespace Tooted
                 {
                     mail.From = new MailAddress(saatja);
                     mail.To.Add(saaja);
-                    mail.Subject = $"Arve nr {t.Number}";
-                    mail.Body = "Arve on manuses.";
+                    mail.Subject = Keel.T($"Arve nr {t.Number}", $"Счёт № {t.Number}", $"Invoice no. {t.Number}");
+                    mail.Body = Keel.T("Arve on manuses.", "Счёт во вложении.", "The invoice is attached.");
                     mail.Attachments.Add(new Attachment(pdfPath));
 
                     using var smtp = new SmtpClient("smtp.gmail.com", 587)
@@ -295,15 +266,15 @@ namespace Tooted
                     smtp.Send(mail);
                 }
 
-                MessageBox.Show(omanik, "Arve saadetud!");
+                MessageBox.Show(omanik, Keel.T("Arve saadetud!", "Счёт отправлен!", "Invoice sent!"));
             }
             catch (SmtpException ex)
             {
-                MessageBox.Show(omanik, "Saatmine ebaõnnestus. Kontrolli saatja e-maili ja app passwordit.\n\n" + ex.Message);
+                MessageBox.Show(omanik, Keel.T("Saatmine ebaõnnestus. Kontrolli saatja e-maili ja app passwordit.\n\n", "Отправка не удалась. Проверьте почту отправителя и пароль приложения.\n\n", "Sending failed. Check the sender email and app password.\n\n") + ex.Message);
             }
             catch (Exception ex)
             {
-                MessageBox.Show(omanik, "Viga: " + ex.Message);
+                MessageBox.Show(omanik, Keel.T("Viga: ", "Ошибка: ", "Error: ") + ex.Message);
             }
             finally
             {
@@ -317,7 +288,7 @@ namespace Tooted
             saatja = appParool = saaja = "";
 
             using Form aken = new Form();
-            aken.Text = "Saada arve e-mailiga";
+            aken.Text = Keel.T("Saada arve e-mailiga", "Отправить счёт по почте", "Email invoice");
             aken.StartPosition = FormStartPosition.CenterParent;
             aken.FormBorderStyle = FormBorderStyle.FixedDialog;
             aken.MaximizeBox = false;
@@ -331,24 +302,24 @@ namespace Tooted
 
             if (kysiSaatja)
             {
-                aken.Controls.Add(new Label { Text = "Saatja e-mail (Gmail):", Location = new Point(15, y), AutoSize = true });
+                aken.Controls.Add(new Label { Text = Keel.T("Saatja e-mail (Gmail):", "Почта отправителя (Gmail):", "Sender email (Gmail):"), Location = new Point(15, y), AutoSize = true });
                 txtSaatja.Location = new Point(15, y + 20);
                 aken.Controls.Add(txtSaatja);
                 y += 55;
 
-                aken.Controls.Add(new Label { Text = "App password (rakenduse parool):", Location = new Point(15, y), AutoSize = true });
+                aken.Controls.Add(new Label { Text = Keel.T("App password (rakenduse parool):", "Пароль приложения:", "App password:"), Location = new Point(15, y), AutoSize = true });
                 txtParool.Location = new Point(15, y + 20);
                 aken.Controls.Add(txtParool);
                 y += 55;
             }
 
-            aken.Controls.Add(new Label { Text = "Saaja e-mail:", Location = new Point(15, y), AutoSize = true });
+            aken.Controls.Add(new Label { Text = Keel.T("Saaja e-mail:", "Почта получателя:", "Recipient email:"), Location = new Point(15, y), AutoSize = true });
             txtSaaja.Location = new Point(15, y + 20);
             aken.Controls.Add(txtSaaja);
             y += 60;
 
-            Button btnSaada = new Button { Text = "Saada", Location = new Point(15, y), Width = 150 };
-            Button btnLoobu = new Button { Text = "Loobu", Location = new Point(175, y), Width = 150, DialogResult = DialogResult.Cancel };
+            Button btnSaada = new Button { Text = Keel.T("Saada", "Отправить", "Send"), Location = new Point(15, y), Width = 150 };
+            Button btnLoobu = new Button { Text = Keel.T("Loobu", "Отмена", "Cancel"), Location = new Point(175, y), Width = 150, DialogResult = DialogResult.Cancel };
             aken.Controls.Add(btnSaada);
             aken.Controls.Add(btnLoobu);
             aken.ClientSize = new Size(340, y + 50);
@@ -357,13 +328,13 @@ namespace Tooted
             {
                 if (!OnEmail(txtSaaja.Text) || (kysiSaatja && !OnEmail(txtSaatja.Text)))
                 {
-                    MessageBox.Show("Sisesta korrektne e-mail!");
+                    MessageBox.Show(Keel.T("Sisesta korrektne e-mail!", "Введите корректную почту!", "Enter a valid email!"));
                     return;
                 }
 
                 if (kysiSaatja && string.IsNullOrWhiteSpace(txtParool.Text))
                 {
-                    MessageBox.Show("Sisesta app password!");
+                    MessageBox.Show(Keel.T("Sisesta app password!", "Введите пароль приложения!", "Enter the app password!"));
                     return;
                 }
 

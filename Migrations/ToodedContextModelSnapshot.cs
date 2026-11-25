@@ -39,22 +39,6 @@ namespace Tooted.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<decimal>("Saldo")
-                        .HasPrecision(10, 2)
-                        .HasColumnType("TEXT");
-
-                    b.Property<int>("Soodustus")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("TasutaKohaletoimetus")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int?>("TasutaToodeId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime?>("ViimanePoore")
-                        .HasColumnType("TEXT");
-
                     b.HasKey("Id");
 
                     b.HasIndex("Email")

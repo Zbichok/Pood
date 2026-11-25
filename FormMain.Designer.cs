@@ -19,75 +19,52 @@
         private Button btnPood;
         private Button btnArve;
         private Button btnLogout;
-        private Button btnRull;
 
         private void InitializeComponent()
         {
             btnTooted = new Button();
             btnPood = new Button();
             btnArve = new Button();
-            github = new PictureBox();
             btnLogout = new Button();
-            btnRull = new Button();
             SuspendLayout();
             btnTooted.Location = new Point(137, 71);
             btnTooted.Name = "btnTooted";
             btnTooted.Size = new Size(200, 40);
             btnTooted.TabIndex = 0;
-            btnTooted.Text = "Tootehaldus";
+            btnTooted.Text = Keel.T("Tootehaldus", "Управление товарами", "Product management");
             btnTooted.UseVisualStyleBackColor = true;
             btnTooted.Click += btnTooted_Click;
             btnPood.Location = new Point(137, 121);
             btnPood.Name = "btnPood";
             btnPood.Size = new Size(200, 40);
             btnPood.TabIndex = 1;
-            btnPood.Text = "Pood";
+            btnPood.Text = Keel.T("Pood", "Магазин", "Shop");
             btnPood.UseVisualStyleBackColor = true;
             btnPood.Click += btnPood_Click;
             btnArve.Location = new Point(137, 171);
             btnArve.Name = "btnArve";
             btnArve.Size = new Size(200, 40);
             btnArve.TabIndex = 2;
-            btnArve.Text = "Arve";
+            btnArve.Text = Keel.T("Arve", "Счёт", "Invoice");
             btnArve.UseVisualStyleBackColor = true;
             btnArve.Click += btnArve_Click;
-            btnRull.Location = new Point(137, 221);
-            btnRull.Name = "btnRull";
-            btnRull.Size = new Size(200, 40);
-            btnRull.TabIndex = 3;
-            btnRull.Text = "Päevane rull";
-            btnRull.UseVisualStyleBackColor = true;
-            btnRull.Click += btnRull_Click;
-            btnLogout.Location = new Point(137, 271);
+            btnLogout.Location = new Point(137, 221);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(200, 40);
             btnLogout.TabIndex = 5;
-            btnLogout.Text = "Logi välja";
+            btnLogout.Text = Keel.T("Logi välja", "Выйти", "Log out");
             btnLogout.UseVisualStyleBackColor = true;
             btnLogout.Click += btnLogout_Click;
-            github.Image = Properties.Resources._25231;
-            github.SizeMode = PictureBoxSizeMode.Zoom;
-            github.Location = new Point(211, 335);
-            github.Name = "github";
-            github.Size = new Size(53, 51);
-            github.TabIndex = 4;
-            github.TabStop = false;
-            github.Cursor = Cursors.Hand;
-            github.Click += pbGithub_Click;
-            ClientSize = new Size(493, 400);
-            Controls.Add(github);
+            ClientSize = new Size(493, 290);
             Controls.Add(btnTooted);
             Controls.Add(btnPood);
             Controls.Add(btnArve);
             Controls.Add(btnLogout);
-            Controls.Add(btnRull);
             Name = "FormMain";
-            Text = "Peamenüü";
+            Text = Keel.T("Peamenüü", "Главное меню", "Main menu");
             ResumeLayout(false);
         }
 
         #endregion
-
-        private PictureBox github;
     }
 }

@@ -20,7 +20,6 @@ namespace Tooted
             modelBuilder.Entity<Kategooria>().ToTable("Kategooriatabel");
             modelBuilder.Entity<Toode>().ToTable("Toodetabel");
             modelBuilder.Entity<Kasutaja>().ToTable("Kasutajad");
-            modelBuilder.Entity<Kasutaja>().Property(k => k.Saldo).HasPrecision(10, 2);
             modelBuilder.Entity<Toode>().Property(t => t.Hind).HasPrecision(10, 2);
 
             // Sama e-postiga kahte kasutajat ei saa olla (450 = SQL Serveri indeksi pikkuse piir, SQLite'is pole vaja, aga ei sega)

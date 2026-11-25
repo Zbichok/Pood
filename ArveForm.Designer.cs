@@ -29,7 +29,7 @@ namespace Tooted
             lblOstukorv.Location = new Point(20, 15);
             lblOstukorv.Name = "lblOstukorv";
             lblOstukorv.TabIndex = 0;
-            lblOstukorv.Text = "Arve read (ostukorv)";
+            lblOstukorv.Text = Keel.T("Arve read (ostukorv)", "Товары в счёте (корзина)", "Invoice items (cart)");
             listOstukorv.ItemHeight = 21;
             listOstukorv.Location = new Point(20, 40);
             listOstukorv.Name = "listOstukorv";
@@ -51,21 +51,21 @@ namespace Tooted
             btnEemalda.Name = "btnEemalda";
             btnEemalda.Size = new Size(160, 35);
             btnEemalda.TabIndex = 4;
-            btnEemalda.Text = "Eemalda valitud";
+            btnEemalda.Text = Keel.T("Eemalda valitud", "Удалить выбранное", "Remove selected");
             btnEemalda.UseVisualStyleBackColor = true;
             btnEemalda.Click += btnEemalda_Click;
             btnGenPDF.Location = new Point(480, 85);
             btnGenPDF.Name = "btnGenPDF";
             btnGenPDF.Size = new Size(160, 35);
             btnGenPDF.TabIndex = 5;
-            btnGenPDF.Text = "Genereeri PDF";
+            btnGenPDF.Text = Keel.T("Genereeri PDF", "Создать PDF", "Generate PDF");
             btnGenPDF.UseVisualStyleBackColor = true;
             btnGenPDF.Click += btnGenPDF_Click;
             btnSaadaEmail.Location = new Point(480, 130);
             btnSaadaEmail.Name = "btnSaadaEmail";
             btnSaadaEmail.Size = new Size(160, 35);
             btnSaadaEmail.TabIndex = 6;
-            btnSaadaEmail.Text = "Saada emailiga";
+            btnSaadaEmail.Text = Keel.T("Saada emailiga", "Отправить по почте", "Send by email");
             btnSaadaEmail.UseVisualStyleBackColor = true;
             btnSaadaEmail.Click += btnSaadaEmail_Click;
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -80,7 +80,7 @@ namespace Tooted
             Controls.Add(btnSaadaEmail);
             Name = "ArveForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Arve";
+            Text = Keel.T("Arve", "Счёт", "Invoice");
             ResumeLayout(false);
             PerformLayout();
         }

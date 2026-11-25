@@ -32,7 +32,7 @@ namespace Tooted
             lblNimi.AutoSize = true;
             lblNimi.Location = new Point(30, 20);
             lblNimi.Name = "lblNimi";
-            lblNimi.Text = "Nimi";
+            lblNimi.Text = Keel.T("Nimi", "Имя", "Name");
             txtNimi.Location = new Point(30, 40);
             txtNimi.Name = "txtNimi";
             txtNimi.Size = new Size(240, 23);
@@ -40,7 +40,7 @@ namespace Tooted
             lblEmail.AutoSize = true;
             lblEmail.Location = new Point(30, 75);
             lblEmail.Name = "lblEmail";
-            lblEmail.Text = "E-mail";
+            lblEmail.Text = Keel.T("E-mail", "Эл. почта", "Email");
             txtEmail.Location = new Point(30, 95);
             txtEmail.Name = "txtEmail";
             txtEmail.Size = new Size(240, 23);
@@ -48,7 +48,7 @@ namespace Tooted
             lblParool.AutoSize = true;
             lblParool.Location = new Point(30, 130);
             lblParool.Name = "lblParool";
-            lblParool.Text = "Parool (vähemalt 6 märki)";
+            lblParool.Text = Keel.T("Parool (vähemalt 6 märki)", "Пароль (не менее 6 символов)", "Password (at least 6 characters)");
             txtParool.Location = new Point(30, 150);
             txtParool.Name = "txtParool";
             txtParool.PasswordChar = '*';
@@ -57,7 +57,7 @@ namespace Tooted
             lblKordus.AutoSize = true;
             lblKordus.Location = new Point(30, 185);
             lblKordus.Name = "lblKordus";
-            lblKordus.Text = "Korda parooli";
+            lblKordus.Text = Keel.T("Korda parooli", "Повторите пароль", "Repeat password");
             txtKordus.Location = new Point(30, 205);
             txtKordus.Name = "txtKordus";
             txtKordus.PasswordChar = '*';
@@ -67,14 +67,14 @@ namespace Tooted
             btnRegistreeru.Name = "btnRegistreeru";
             btnRegistreeru.Size = new Size(240, 35);
             btnRegistreeru.TabIndex = 4;
-            btnRegistreeru.Text = "Registreeru";
+            btnRegistreeru.Text = Keel.T("Registreeru", "Регистрация", "Register");
             btnRegistreeru.UseVisualStyleBackColor = true;
             btnRegistreeru.Click += btnRegistreeru_Click;
             btnTagasi.Location = new Point(30, 288);
             btnTagasi.Name = "btnTagasi";
             btnTagasi.Size = new Size(240, 28);
             btnTagasi.TabIndex = 5;
-            btnTagasi.Text = "Tagasi sisselogimisse";
+            btnTagasi.Text = Keel.T("Tagasi sisselogimisse", "Назад ко входу", "Back to sign in");
             btnTagasi.UseVisualStyleBackColor = true;
             btnTagasi.Click += btnTagasi_Click;
             lblVeateade.ForeColor = Color.Red;
@@ -99,7 +99,7 @@ namespace Tooted
             Controls.Add(btnTagasi);
             Controls.Add(lblVeateade);
             Name = "RegistreerimisForm";
-            Text = "Registreerimine";
+            Text = Keel.T("Registreerimine", "Регистрация", "Registration");
             ResumeLayout(false);
             PerformLayout();
         }

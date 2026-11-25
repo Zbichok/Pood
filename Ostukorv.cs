@@ -2,7 +2,6 @@
 {
     /// <summary>
     /// Üks ostukorv kogu rakenduse peale – säilib vormide vahel liikudes.
-    /// Boonused (soodustus, tasuta toode, tasuta kohaletoimetus) tulevad AktiivneKasutaja käest.
     /// </summary>
     public static class Ostukorv
     {
@@ -14,43 +13,18 @@
 
         public static int Tukke => Read.Sum(r => r.Kogus);
 
-        /// <summary>Korvis olev rida, mille üks tükk on boonusena tasuta.</summary>
-        public static OstukorviRida? TasutaRida
-        {
-            get
-            {
-                var t = AktiivneKasutaja.TasutaToode;
-                return t == null ? null : Read.FirstOrDefault(r => r.Toode.Id == t.Id);
-            }
-        }
+        public static decimal Kohaletoimetus => Read.Count == 0 ? 0m : KohaletoimetuseHind;
 
-        public static decimal TasutaToodeSumma => TasutaRida?.Toode.Hind ?? 0m;
+        public static decimal Kokku => Vahesumma + Kohaletoimetus;
 
-        public static decimal SoodustuseSumma =>
-            Math.Round((Vahesumma - TasutaToodeSumma) * AktiivneKasutaja.Soodustus / 100m, 2);
-
-        public static decimal Kohaletoimetus =>
-            Read.Count == 0 || AktiivneKasutaja.TasutaKohaletoimetus ? 0m : KohaletoimetuseHind;
-
-        public static decimal Kokku => Vahesumma - TasutaToodeSumma - SoodustuseSumma + Kohaletoimetus;
-
-        /// <summary>Read arve all: vahesumma, boonused, kohaletoimetus.</summary>
+        /// <summary>Read arve all: vahesumma ja kohaletoimetus.</summary>
         public static List<string> Kokkuvote()
         {
-            var read = new List<string> { $"Vahesumma: {Vahesumma:0.00} €" };
-
-            var tasuta = TasutaRida;
-            if (tasuta != null)
-                read.Add($"Tasuta toode ({tasuta.Toode.Toodenimetus}): -{TasutaToodeSumma:0.00} €");
-
-            if (AktiivneKasutaja.Soodustus > 0)
-                read.Add($"Soodustus -{AktiivneKasutaja.Soodustus}%: -{SoodustuseSumma:0.00} €");
-
-            read.Add(AktiivneKasutaja.TasutaKohaletoimetus
-                ? "Kohaletoimetus: tasuta"
-                : $"Kohaletoimetus: {Kohaletoimetus:0.00} €");
-
-            return read;
+            return new List<string>
+            {
+                Keel.T($"Vahesumma: {Vahesumma:0.00} €", $"Стоимость товаров: {Vahesumma:0.00} €", $"Subtotal: {Vahesumma:0.00} €"),
+                Keel.T($"Kohaletoimetus: {Kohaletoimetus:0.00} €", $"Доставка: {Kohaletoimetus:0.00} €", $"Delivery: {Kohaletoimetus:0.00} €")
+            };
         }
 
         public static bool Lisa(Toode toode, int kogus, out string? viga)
@@ -59,7 +33,7 @@
 
             if (kogus <= 0)
             {
-                viga = "Vale kogus.";
+                viga = Keel.T("Vale kogus.", "Неверное количество.", "Invalid quantity.");
                 return false;
             }
 
@@ -68,7 +42,7 @@
 
             if (kokkuKorvis > toode.Kogus)
             {
-                viga = $"Laos on ainult {toode.Kogus} tk.";
+                viga = Keel.T($"Laos on ainult {toode.Kogus} tk.", $"В наличии только {toode.Kogus} шт.", $"Only {toode.Kogus} pcs in stock.");
                 return false;
             }
 

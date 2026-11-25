@@ -10,31 +10,11 @@
 
         public static void Rakenda(Form vorm)
         {
+            Keel.Lisa(vorm);
             vorm.BackColor = Taust;
             vorm.ForeColor = Tekst;
             vorm.Font = new Font("Segoe UI", 9.5F);
             RakendaKontrollidele(vorm.Controls);
-        }
-
-        /// <summary>Vikerkaarevärv (kraad 0-360), pastelne. Kasutab rulli efekt ja menüü nupp.</summary>
-        public static Color Vikerkaar(double kraad, double heledus = 1.0)
-        {
-            double h = (((kraad % 360) + 360) % 360) / 60.0;
-            double s = 0.6, v = heledus;
-            int i = (int)Math.Floor(h) % 6;
-            double f = h - Math.Floor(h);
-            double p = v * (1 - s), q = v * (1 - s * f), t = v * (1 - s * (1 - f));
-            double r, g, b;
-            switch (i)
-            {
-                case 0: r = v; g = t; b = p; break;
-                case 1: r = q; g = v; b = p; break;
-                case 2: r = p; g = v; b = t; break;
-                case 3: r = p; g = q; b = v; break;
-                case 4: r = t; g = p; b = v; break;
-                default: r = v; g = p; b = q; break;
-            }
-            return Color.FromArgb((int)(r * 255), (int)(g * 255), (int)(b * 255));
         }
 
         /// <summary>Nupp "Peamenüü": sulgeb vormi ja viib tagasi peamenüüsse (vormid avatakse ShowDialog-iga).</summary>
@@ -42,7 +22,7 @@
         {
             var nupp = new Button
             {
-                Text = "← Peamenüü",
+                Text = Keel.T("← Peamenüü", "← Главное меню", "← Main menu"),
                 Location = asukoht,
                 Size = new Size(130, 32),
                 Name = "btnTagasi"

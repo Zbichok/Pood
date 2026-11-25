@@ -28,7 +28,7 @@ namespace Tooted
             lblEmail.AutoSize = true;
             lblEmail.Location = new Point(20, 20);
             lblEmail.Name = "lblEmail";
-            lblEmail.Text = "E-mail";
+            lblEmail.Text = Keel.T("E-mail", "Эл. почта", "Email");
             txtEmail.Location = new Point(20, 40);
             txtEmail.Name = "txtEmail";
             txtEmail.Size = new Size(240, 23);
@@ -36,7 +36,7 @@ namespace Tooted
             lblParool.AutoSize = true;
             lblParool.Location = new Point(20, 75);
             lblParool.Name = "lblParool";
-            lblParool.Text = "Parool";
+            lblParool.Text = Keel.T("Parool", "Пароль", "Password");
             txtParool.Location = new Point(20, 95);
             txtParool.Name = "txtParool";
             txtParool.PasswordChar = '*';
@@ -46,14 +46,14 @@ namespace Tooted
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(115, 28);
             btnLogin.TabIndex = 2;
-            btnLogin.Text = "Logi sisse";
+            btnLogin.Text = Keel.T("Logi sisse", "Войти", "Sign in");
             btnLogin.UseVisualStyleBackColor = true;
             btnLogin.Click += btnLogin_Click;
             btnRegistreeru.Location = new Point(145, 130);
             btnRegistreeru.Name = "btnRegistreeru";
             btnRegistreeru.Size = new Size(115, 28);
             btnRegistreeru.TabIndex = 3;
-            btnRegistreeru.Text = "Registreeru";
+            btnRegistreeru.Text = Keel.T("Registreeru", "Регистрация", "Register");
             btnRegistreeru.UseVisualStyleBackColor = true;
             btnRegistreeru.Click += btnRegistreeru_Click;
             lblVeateade.AutoSize = true;
@@ -76,7 +76,7 @@ namespace Tooted
             MaximizeBox = false;
             Name = "LoginForm";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "Login";
+            Text = Keel.T("Login", "Вход", "Sign in");
             ResumeLayout(false);
             PerformLayout();
         }

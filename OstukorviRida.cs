@@ -9,7 +9,7 @@
 
         public override string ToString()
         {
-            return $"{Toode.Toodenimetus} – {Kogus} tk – {Summa:0.00} €";
+            return Keel.T($"{Toode.Toodenimetus} – {Kogus} tk – {Summa:0.00} €", $"{Toode.Toodenimetus} — {Kogus} шт. — {Summa:0.00} €", $"{Toode.Toodenimetus} — {Kogus} pcs — {Summa:0.00} €");
         }
     }
 }

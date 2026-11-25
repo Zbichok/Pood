@@ -13,7 +13,7 @@ namespace Tooted
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-            AcceptButton = btnLogin;   // Enter vajutab "Logi sisse"
+            AcceptButton = btnLogin;   // Enter vajutab Keel.T("Logi sisse", "Войти", "Sign in")
         }
 
         private void btnLogin_Click(object sender, EventArgs e)
@@ -28,7 +28,7 @@ namespace Tooted
             // Sama teade mõlemal juhul: võõras ei saa teada, kas selline e-post on olemas
             if (kasutaja == null || !PasswordHelper.Verify(parool, kasutaja.ParoolHash))
             {
-                lblVeateade.Text = "Vale e-post või parool.";
+                lblVeateade.Text = Keel.T("Vale e-post või parool.", "Неверная почта или пароль.", "Invalid email or password.");
                 txtParool.Clear();
                 return;
             }
@@ -36,7 +36,6 @@ namespace Tooted
             AktiivneKasutaja.Nimi = kasutaja.Nimi;
             AktiivneKasutaja.Roll = kasutaja.Roll;
             AktiivneKasutaja.Email = kasutaja.Email;
-            AktiivneKasutaja.LaeBoonused();
 
             DialogResult = DialogResult.OK;
             Close();

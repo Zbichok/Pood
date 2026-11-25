@@ -22,7 +22,6 @@ namespace Tooted
         /// <summary>Kulleri hinnanguline saabumisaeg minutites (0 = kohaletoimetuse infot pole).</summary>
         public int KullerMin { get; init; }
 
-        public decimal? SaldoKasutus { get; set; }
         public decimal? Makstud { get; set; }
 
         public DateTime? KullerSaabub => KullerMin > 0 ? Aeg.AddMinutes(KullerMin) : null;
@@ -64,7 +63,7 @@ namespace Tooted
 
         public string KullerTekst =>
             KullerMin > 0
-                ? $"Kuller jõuab umbes {KullerMin} min pärast (u kell {KullerSaabub:HH:mm})."
+                ? Keel.T($"Kuller jõuab umbes {KullerMin} min pärast (u kell {KullerSaabub:HH:mm}).", $"Курьер прибудет через {KullerMin} мин (около {KullerSaabub:HH:mm}).", $"Courier arrives in about {KullerMin} min (around {KullerSaabub:HH:mm}).")
                 : "";
 
         /// <summary>Tšeki tekst ekraani jaoks.</summary>
@@ -73,11 +72,11 @@ namespace Tooted
             var sb = new StringBuilder();
             string nl = Environment.NewLine;
 
-            sb.Append($"ARVE nr {Number}").Append(nl);
-            sb.Append($"Kuupäev: {Aeg:dd.MM.yyyy HH:mm}").Append(nl);
-            sb.Append($"Klient: {Klient}").Append(nl);
+            sb.Append(Keel.T($"ARVE nr {Number}", $"СЧЁТ № {Number}", $"INVOICE no. {Number}")).Append(nl);
+            sb.Append(Keel.T($"Kuupäev: {Aeg:dd.MM.yyyy HH:mm}", $"Дата: {Aeg:dd.MM.yyyy HH:mm}", $"Date: {Aeg:dd.MM.yyyy HH:mm}")).Append(nl);
+            sb.Append(Keel.T($"Klient: {Klient}", $"Клиент: {Klient}", $"Customer: {Klient}")).Append(nl);
             if (!string.IsNullOrWhiteSpace(Aadress))
-                sb.Append($"Aadress: {Aadress}").Append(nl);
+                sb.Append(Keel.T($"Aadress: {Aadress}", $"Адрес: {Aadress}", $"Address: {Aadress}")).Append(nl);
             sb.Append(new string('-', 44)).Append(nl);
 
             foreach (var rida in Read)
@@ -87,12 +86,10 @@ namespace Tooted
             foreach (var rida in Kokkuvote)
                 sb.Append(rida).Append(nl);
 
-            sb.Append($"KOKKU: {Kokku:0.00} €").Append(nl);
+            sb.Append(Keel.T($"KOKKU: {Kokku:0.00} €", $"ИТОГО: {Kokku:0.00} €", $"TOTAL: {Kokku:0.00} €")).Append(nl);
 
-            if (SaldoKasutus.GetValueOrDefault() > 0m)
-                sb.Append($"Saldost: {SaldoKasutus:0.00} €").Append(nl);
             if (Makstud != null)
-                sb.Append($"Makstud: {Makstud:0.00} €").Append(nl);
+                sb.Append(Keel.T($"Makstud: {Makstud:0.00} €", $"Оплачено: {Makstud:0.00} €", $"Paid: {Makstud:0.00} €")).Append(nl);
 
             if (KullerMin > 0)
             {
@@ -142,14 +139,14 @@ namespace Tooted
                 y += samm;
             }
 
-            gfx.DrawString($"Arve nr {t.Number}", Fnt(20), XBrushes.Black,
+            gfx.DrawString(Keel.T($"Arve nr {t.Number}", $"Счёт № {t.Number}", $"Invoice no. {t.Number}"), Fnt(20), XBrushes.Black,
                 new XRect(0, y, page.Width, 40), XStringFormats.TopCenter);
             y = 60;
 
-            Joonista($"Kuupäev: {t.Aeg:dd.MM.yyyy HH:mm}", font, 20);
-            Joonista($"Klient: {t.Klient}", font, 20);
+            Joonista(Keel.T($"Kuupäev: {t.Aeg:dd.MM.yyyy HH:mm}", $"Дата: {t.Aeg:dd.MM.yyyy HH:mm}", $"Date: {t.Aeg:dd.MM.yyyy HH:mm}"), font, 20);
+            Joonista(Keel.T($"Klient: {t.Klient}", $"Клиент: {t.Klient}", $"Customer: {t.Klient}"), font, 20);
             if (!string.IsNullOrWhiteSpace(t.Aadress))
-                Joonista($"Aadress: {t.Aadress}", font, 20);
+                Joonista(Keel.T($"Aadress: {t.Aadress}", $"Адрес: {t.Aadress}", $"Address: {t.Aadress}"), font, 20);
             if (t.KullerMin > 0)
                 Joonista(t.KullerTekst, font, 20);
 
@@ -162,12 +159,10 @@ namespace Tooted
                 Joonista(rida, font, 22);
 
             y += 6;
-            Joonista($"Kokku: {t.Kokku:0.00} €", suur, 26);
+            Joonista(Keel.T($"Kokku: {t.Kokku:0.00} €", $"Итого: {t.Kokku:0.00} €", $"Total: {t.Kokku:0.00} €"), suur, 26);
 
-            if (t.SaldoKasutus.GetValueOrDefault() > 0m)
-                Joonista($"Saldost: {t.SaldoKasutus:0.00} €", font, 22);
             if (t.Makstud != null)
-                Joonista($"Makstud: {t.Makstud:0.00} €", font, 22);
+                Joonista(Keel.T($"Makstud: {t.Makstud:0.00} €", $"Оплачено: {t.Makstud:0.00} €", $"Paid: {t.Makstud:0.00} €"), font, 22);
 
             gfx.Dispose();
             document.Save(tee);

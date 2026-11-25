@@ -29,7 +29,7 @@ namespace Tooted
             MaximizeBox = false;
             Stiil.LisaTagasiNupp(this, new Point(12, 515));
 
-            var btnTyhjenda = new Button { Text = "Tühjenda väljad", Location = new Point(12, 218), Size = new Size(97, 55) };
+            var btnTyhjenda = new Button { Name = "btnTyhjenda", Text = Keel.T("Tühjenda väljad", "Очистить поля", "Clear fields"), Location = new Point(12, 218), Size = new Size(97, 55) };
             btnTyhjenda.Click += (s, e) => TuhjendaVorm();
             Controls.Add(btnTyhjenda);
             Stiil.RakendaKontrollidele(Controls);
@@ -46,6 +46,7 @@ namespace Tooted
             }
 
             UuendaFotoNupud(null);
+            Paiguta();
         }
 
         private void LaeKategooriad()
@@ -106,20 +107,20 @@ namespace Tooted
 
             if (string.IsNullOrWhiteSpace(txtNimetus.Text))
             {
-                MessageBox.Show("Sisesta toote nimetus!");
+                MessageBox.Show(Keel.T("Sisesta toote nimetus!", "Введите название товара!", "Enter a product name!"));
                 kogus = 0;
                 return false;
             }
 
             if (!int.TryParse(txtKogus.Text, out kogus) || kogus < 0)
             {
-                MessageBox.Show("Vale kogus!");
+                MessageBox.Show(Keel.T("Vale kogus!", "Неверное количество!", "Invalid quantity!"));
                 return false;
             }
 
             if (!decimal.TryParse(txtHind.Text.Replace(',', '.'), System.Globalization.NumberStyles.Number, System.Globalization.CultureInfo.InvariantCulture, out hind) || hind < 0)
             {
-                MessageBox.Show("Vale hind!");
+                MessageBox.Show(Keel.T("Vale hind!", "Неверная цена!", "Invalid price!"));
                 return false;
             }
 
@@ -127,7 +128,7 @@ namespace Tooted
 
             if (cmbKategooria.SelectedValue == null)
             {
-                MessageBox.Show("Vali kategooria!");
+                MessageBox.Show(Keel.T("Vali kategooria!", "Выберите категорию!", "Select a category!"));
                 return false;
             }
 
@@ -162,7 +163,7 @@ namespace Tooted
         private void btnLisaKategooria_Click(object sender, EventArgs e)
         {
             using Form aken = new Form();
-            aken.Text = "Lisa kategooria";
+            aken.Text = Keel.T("Lisa kategooria", "Добавить категорию", "Add category");
             aken.StartPosition = FormStartPosition.CenterParent;
             aken.Size = new Size(350, 250);
             aken.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -171,7 +172,7 @@ namespace Tooted
 
             Label lblNimi = new Label()
             {
-                Text = "Kategooria nimi:",
+                Text = Keel.T("Kategooria nimi:", "Название категории:", "Category name:"),
                 Location = new Point(15, 20),
                 AutoSize = true
             };
@@ -184,7 +185,7 @@ namespace Tooted
 
             Label lblKirjeldus = new Label()
             {
-                Text = "Kirjeldus:",
+                Text = Keel.T("Kirjeldus:", "Описание:", "Description:"),
                 Location = new Point(15, 80),
                 AutoSize = true
             };
@@ -197,7 +198,7 @@ namespace Tooted
 
             Button btnSalvesta = new Button()
             {
-                Text = "Salvesta",
+                Text = Keel.T("Salvesta", "Сохранить", "Save"),
                 Location = new Point(15, 150),
                 Width = 140,
                 DialogResult = DialogResult.None
@@ -205,7 +206,7 @@ namespace Tooted
 
             Button btnLoobu = new Button()
             {
-                Text = "Loobu",
+                Text = Keel.T("Loobu", "Отмена", "Cancel"),
                 Location = new Point(175, 150),
                 Width = 140,
                 DialogResult = DialogResult.Cancel
@@ -218,14 +219,14 @@ namespace Tooted
 
                 if (string.IsNullOrWhiteSpace(nimi))
                 {
-                    MessageBox.Show("Sisesta kategooria nimi!");
+                    MessageBox.Show(Keel.T("Sisesta kategooria nimi!", "Введите название категории!", "Enter a category name!"));
                     return;
                 }
 
                 if (_db.Kategooriatabel.Any(k =>
                     k.Kategooria_nimetus.ToLower() == nimi.ToLower()))
                 {
-                    MessageBox.Show("Selline kategooria on juba olemas!");
+                    MessageBox.Show(Keel.T("Selline kategooria on juba olemas!", "Такая категория уже существует!", "This category already exists!"));
                     return;
                 }
 
@@ -244,13 +245,13 @@ namespace Tooted
 
                     cmbKategooria.SelectedValue = kategooria.Id;
 
-                    MessageBox.Show("Kategooria lisatud!");
+                    MessageBox.Show(Keel.T("Kategooria lisatud!", "Категория добавлена!", "Category added!"));
                     aken.DialogResult = DialogResult.OK;
                     aken.Close();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Viga kategooria lisamisel: " + ex.Message);
+                    MessageBox.Show(Keel.T("Viga kategooria lisamisel: ", "Ошибка добавления категории: ", "Error adding category: ") + ex.Message);
                 }
             };
 
@@ -270,7 +271,7 @@ namespace Tooted
         private void btnKustutaKategooria_Click(object sender, EventArgs e)
         {
             using Form aken = new Form();
-            aken.Text = "Kustuta kategooria";
+            aken.Text = Keel.T("Kustuta kategooria", "Удалить категорию", "Delete category");
             aken.StartPosition = FormStartPosition.CenterParent;
             aken.Size = new Size(350, 180);
             aken.FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -279,7 +280,7 @@ namespace Tooted
 
             Label lblNimi = new Label()
             {
-                Text = "Sisesta kategooria nimi:",
+                Text = Keel.T("Sisesta kategooria nimi:", "Введите название категории:", "Enter category name:"),
                 Location = new Point(15, 20),
                 AutoSize = true
             };
@@ -292,14 +293,14 @@ namespace Tooted
 
             Button btnKustuta = new Button()
             {
-                Text = "Kustuta",
+                Text = Keel.T("Kustuta", "Удалить", "Delete"),
                 Location = new Point(15, 90),
                 Width = 140
             };
 
             Button btnLoobu = new Button()
             {
-                Text = "Loobu",
+                Text = Keel.T("Loobu", "Отмена", "Cancel"),
                 Location = new Point(175, 90),
                 Width = 140,
                 DialogResult = DialogResult.Cancel
@@ -311,7 +312,7 @@ namespace Tooted
 
                 if (string.IsNullOrWhiteSpace(nimi))
                 {
-                    MessageBox.Show("Sisesta kategooria nimi!");
+                    MessageBox.Show(Keel.T("Sisesta kategooria nimi!", "Введите название категории!", "Enter a category name!"));
                     return;
                 }
 
@@ -321,7 +322,7 @@ namespace Tooted
 
                 if (kategooria == null)
                 {
-                    MessageBox.Show("Kategooriat ei leitud!");
+                    MessageBox.Show(Keel.T("Kategooriat ei leitud!", "Категория не найдена!", "Category not found!"));
                     return;
                 }
 
@@ -331,15 +332,15 @@ namespace Tooted
                 if (tootedOlemas)
                 {
                     MessageBox.Show(
-                        "Selles kategoorias on tooteid. " +
-                        "Kustuta või muuda kõigepealt nende toodete kategooriat."
+                        Keel.T("Selles kategoorias on tooteid. ", "В этой категории есть товары. ", "This category contains products. ") +
+                        Keel.T("Kustuta või muuda kõigepealt nende toodete kategooriat.", "Сначала удалите товары или измените их категорию.", "First delete the products or change their category.")
                     );
                     return;
                 }
 
                 var vastus = MessageBox.Show(
-                    $"Kas soovid kategooria \"{kategooria.Kategooria_nimetus}\" kustutada?",
-                    "Kinnitamine",
+                    Keel.T($"Kas soovid kategooria \"{kategooria.Kategooria_nimetus}\" kustutada?", $"Удалить категорию \"{kategooria.Kategooria_nimetus}\"?", $"Delete category \"{kategooria.Kategooria_nimetus}\"?"),
+                    Keel.T("Kinnitamine", "Подтверждение", "Confirmation"),
                     MessageBoxButtons.YesNo,
                     MessageBoxIcon.Question
                 );
@@ -354,14 +355,14 @@ namespace Tooted
 
                     LaeKategooriad();
 
-                    MessageBox.Show("Kategooria kustutatud!");
+                    MessageBox.Show(Keel.T("Kategooria kustutatud!", "Категория удалена!", "Category deleted!"));
 
                     aken.DialogResult = DialogResult.OK;
                     aken.Close();
                 }
                 catch (Exception ex)
                 {
-                    MessageBox.Show("Viga kategooria kustutamisel: " + ex.Message);
+                    MessageBox.Show(Keel.T("Viga kategooria kustutamisel: ", "Ошибка удаления категории: ", "Error deleting category: ") + ex.Message);
                 }
             };
 
@@ -402,7 +403,7 @@ namespace Tooted
             int? id = ValitudId();
             if (id == null)
             {
-                MessageBox.Show("Vali tabelist toode!");
+                MessageBox.Show(Keel.T("Vali tabelist toode!", "Выберите товар в таблице!", "Select a product in the table!"));
                 return;
             }
 
@@ -429,14 +430,14 @@ namespace Tooted
             int? id = ValitudId();
             if (id == null)
             {
-                MessageBox.Show("Vali tabelist toode!");
+                MessageBox.Show(Keel.T("Vali tabelist toode!", "Выберите товар в таблице!", "Select a product in the table!"));
                 return;
             }
 
             var toode = _db.Toodetabel.Find(id.Value);
             if (toode == null) return;
 
-            if (MessageBox.Show($"Kas kustutada \"{toode.Toodenimetus}\"?", "Kinnitamine",
+            if (MessageBox.Show(Keel.T($"Kas kustutada \"{toode.Toodenimetus}\"?", $"Удалить \"{toode.Toodenimetus}\"?", $"Delete \"{toode.Toodenimetus}\"?"), Keel.T("Kinnitamine", "Подтверждение", "Confirmation"),
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 
@@ -452,7 +453,7 @@ namespace Tooted
         private void UuendaFotoNupud(string? pilt)
         {
             bool onFoto = !string.IsNullOrEmpty(pilt);
-            btnFoto.Text = onFoto ? "Muuda foto" : "Lisa foto";
+            btnFoto.Text = onFoto ? Keel.T("Muuda foto", "Изменить фото", "Change photo") : Keel.T("Lisa foto", "Добавить фото", "Add photo");
             btnKustutaFoto.Visible = onFoto;
         }
 
@@ -476,7 +477,7 @@ namespace Tooted
             int? id = ValitudId();
             if (id == null)
             {
-                MessageBox.Show("Vali enne tabelist toode!");
+                MessageBox.Show(Keel.T("Vali enne tabelist toode!", "Сначала выберите товар в таблице!", "Select a product in the table first!"));
                 return;
             }
 
@@ -484,7 +485,7 @@ namespace Tooted
             if (toode == null) return;
 
             using var ofd = new OpenFileDialog();
-            ofd.Title = $"Vali foto: {toode.Toodenimetus}";
+            ofd.Title = Keel.T($"Vali foto: {toode.Toodenimetus}", $"Выберите фото: {toode.Toodenimetus}", $"Choose photo: {toode.Toodenimetus}");
             ofd.Filter = "Pildid|*.jpg;*.jpeg;*.png";
 
             if (ofd.ShowDialog() != DialogResult.OK) return;
@@ -496,17 +497,17 @@ namespace Tooted
                 {
                     if (test == null)
                     {
-                        MessageBox.Show("Faili ei saanud pildina avada.");
+                        MessageBox.Show(Keel.T("Faili ei saanud pildina avada.", "Не удалось открыть файл как изображение.", "Could not open the file as an image."));
                         return;
                     }
                 }
 
                 toode.Pilt = Kaustad.Salvesta(ofd.FileName);
-                _db.SaveChanges();           // salvestub kohe, "Uuenda" vajutama ei pea
+                _db.SaveChanges();           // salvestub kohe, Keel.T("Uuenda", "Обновить", "Update") vajutama ei pea
             }
             catch (Exception ex)
             {
-                MessageBox.Show("Foto salvestamine ebaõnnestus: " + ex.Message);
+                MessageBox.Show(Keel.T("Foto salvestamine ebaõnnestus: ", "Не удалось сохранить фото: ", "Failed to save photo: ") + ex.Message);
                 return;
             }
 
@@ -522,14 +523,14 @@ namespace Tooted
             int? id = ValitudId();
             if (id == null)
             {
-                MessageBox.Show("Vali enne tabelist toode!");
+                MessageBox.Show(Keel.T("Vali enne tabelist toode!", "Сначала выберите товар в таблице!", "Select a product in the table first!"));
                 return;
             }
 
             var toode = _db.Toodetabel.Find(id.Value);
             if (toode == null || string.IsNullOrEmpty(toode.Pilt)) return;
 
-            if (MessageBox.Show($"Kas eemaldada toote \"{toode.Toodenimetus}\" foto?", "Kinnitamine",
+            if (MessageBox.Show(Keel.T($"Kas eemaldada toote \"{toode.Toodenimetus}\" foto?", $"Удалить фото товара \"{toode.Toodenimetus}\"?", $"Remove the photo of \"{toode.Toodenimetus}\"?"), Keel.T("Kinnitamine", "Подтверждение", "Confirmation"),
                     MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
                 return;
 

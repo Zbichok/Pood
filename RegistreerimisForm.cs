@@ -12,7 +12,7 @@ namespace Tooted
         public RegistreerimisForm()
         {
             InitializeComponent();
-            AcceptButton = btnRegistreeru;   // Enter vajutab "Registreeru"
+            AcceptButton = btnRegistreeru;   // Enter vajutab Keel.T("Registreeru", "Регистрация", "Register")
             StartPosition = FormStartPosition.CenterParent;
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
@@ -29,25 +29,25 @@ namespace Tooted
 
             if (string.IsNullOrWhiteSpace(nimi))
             {
-                lblVeateade.Text = "Sisesta nimi!";
+                lblVeateade.Text = Keel.T("Sisesta nimi!", "Введите имя!", "Enter your name!");
                 return;
             }
 
             if (!OnEmail(email))
             {
-                lblVeateade.Text = "Vale e-maili formaat!";
+                lblVeateade.Text = Keel.T("Vale e-maili formaat!", "Неверный формат почты!", "Invalid email format!");
                 return;
             }
 
             if (parool.Length < 6)
             {
-                lblVeateade.Text = "Parool peab olema vähemalt 6 märki!";
+                lblVeateade.Text = Keel.T("Parool peab olema vähemalt 6 märki!", "Пароль: не менее 6 символов!", "Password: at least 6 characters!");
                 return;
             }
 
             if (parool != kordus)
             {
-                lblVeateade.Text = "Paroolid ei kattu!";
+                lblVeateade.Text = Keel.T("Paroolid ei kattu!", "Пароли не совпадают!", "Passwords do not match!");
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace Tooted
 
                 if (db.Kasutajad.Any(k => k.Email.ToLower() == email))
                 {
-                    lblVeateade.Text = "Selle e-mailiga kasutaja on juba olemas!";
+                    lblVeateade.Text = Keel.T("Selle e-mailiga kasutaja on juba olemas!", "Эта почта уже зарегистрирована!", "This email is already registered!");
                     return;
                 }
 
@@ -72,11 +72,11 @@ namespace Tooted
             }
             catch (Exception ex)
             {
-                lblVeateade.Text = "Viga: " + ex.Message;
+                lblVeateade.Text = Keel.T("Viga: ", "Ошибка: ", "Error: ") + ex.Message;
                 return;
             }
 
-            MessageBox.Show("Konto loodud! Nüüd saad sisse logida.");
+            MessageBox.Show(Keel.T("Konto loodud! Nüüd saad sisse logida.", "Аккаунт создан! Теперь можно войти.", "Account created! You can now sign in."));
             RegistreeritudEmail = email;
             DialogResult = DialogResult.OK;
             Close();

@@ -24,11 +24,12 @@ namespace Tooted
             Stiil.Rakenda(this);
             FormBorderStyle = FormBorderStyle.FixedSingle;
             MaximizeBox = false;
-            Text = "Pood";
+            Text = Keel.T("Pood", "Магазин", "Shop");
             Stiil.LisaTagasiNupp(this, new Point(769, 580));
 
             if (AktiivneKasutaja.OnAdmin)
-                lblMarkus.Text = "Admin: ostud on testostud (andmeid ei muudeta).";
+                lblMarkus.Text = Keel.T("Admin: ostud on testostud (andmeid ei muudeta).", "Админ: тестовые покупки (данные не изменяются).", "Admin: test purchases (data is not changed).");
+            Paiguta();
         }
 
         private void LaeKategooriadJaPildid()
@@ -90,11 +91,12 @@ namespace Tooted
             // Klikk pildil näitab toote infot
             pb.Cursor = Cursors.Hand;
             pb.Click += (s, e) => MessageBox.Show(
-                $"{t.Toodenimetus}\nHind: {t.Hind:0.00} €\nLaos: {t.Kogus} tk", "Toode");
+                Keel.T($"{t.Toodenimetus}\nHind: {t.Hind:0.00} €\nLaos: {t.Kogus} tk", $"{t.Toodenimetus}\nЦена: {t.Hind:0.00} €\nВ наличии: {t.Kogus} шт.", $"{t.Toodenimetus}\nPrice: {t.Hind:0.00} €\nIn stock: {t.Kogus} pcs"), Keel.T("Toode", "Товар", "Product"));
 
             Label lblNimi = new Label
             {
                 Text = t.Toodenimetus,
+                Tag = "product-data",
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(5, 128),
@@ -143,7 +145,7 @@ namespace Tooted
 
             Button btn = new Button
             {
-                Text = laos ? "Lisa korvi" : "Laost otsas",
+                Text = laos ? Keel.T("Lisa korvi", "В корзину", "Add to cart") : Keel.T("Laost otsas", "Нет в наличии", "Out of stock"),
                 Location = new Point(15, 224),
                 Size = new Size(KaartLaius - 32, 27),
                 Enabled = laos
@@ -178,7 +180,7 @@ namespace Tooted
                 if (kogus < 1)
                 {
                     SeaKogus(1);
-                    MessageBox.Show("Sisesta kogus (vähemalt 1).");
+                    MessageBox.Show(Keel.T("Sisesta kogus (vähemalt 1).", "Введите количество (не менее 1).", "Enter a quantity (at least 1)."));
                     return;
                 }
 
@@ -205,7 +207,7 @@ namespace Tooted
 
         private void UuendaKorviInfo()
         {
-            lblKorv.Text = $"Ostukorv: {Ostukorv.Tukke} tk – {Ostukorv.Vahesumma:0.00} €";
+            lblKorv.Text = Keel.T($"Ostukorv: {Ostukorv.Tukke} tk – {Ostukorv.Vahesumma:0.00} €", $"Корзина: {Ostukorv.Tukke} шт. — {Ostukorv.Vahesumma:0.00} €", $"Cart: {Ostukorv.Tukke} pcs — {Ostukorv.Vahesumma:0.00} €");
         }
 
         private void tabPage1_Click(object sender, EventArgs e)

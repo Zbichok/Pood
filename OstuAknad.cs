@@ -11,7 +11,7 @@ namespace Tooted
 
         private AadressForm()
         {
-            Text = "Kohaletoimetuse aadress";
+            Text = Keel.T("Kohaletoimetuse aadress", "Адрес доставки", "Delivery address");
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -20,24 +20,24 @@ namespace Tooted
             ClientSize = new Size(360, 270);
 
             int y = 15;
-            Controls.Add(new Label { Text = "Tänav ja maja nr:", Location = new Point(15, y), AutoSize = true });
+            Controls.Add(new Label { Text = Keel.T("Tänav ja maja nr:", "Улица и номер дома:", "Street and house number:"), Location = new Point(15, y), AutoSize = true });
             txtTanav.Location = new Point(15, y + 20);
             Controls.Add(txtTanav);
             y += 55;
 
-            Controls.Add(new Label { Text = "Korter (kui on):", Location = new Point(15, y), AutoSize = true });
+            Controls.Add(new Label { Text = Keel.T("Korter (kui on):", "Квартира (если есть):", "Apartment (if any):"), Location = new Point(15, y), AutoSize = true });
             txtKorter.Location = new Point(15, y + 20);
             Controls.Add(txtKorter);
             y += 55;
 
-            Controls.Add(new Label { Text = "Linn:", Location = new Point(15, y), AutoSize = true });
+            Controls.Add(new Label { Text = Keel.T("Linn:", "Город:", "City:"), Location = new Point(15, y), AutoSize = true });
             txtLinn.Location = new Point(15, y + 20);
             Controls.Add(txtLinn);
             y += 55;
 
             Controls.Add(new Label
             {
-                Text = "Aadressi ei salvestata – seda kasutatakse ainult selle ostu jaoks.",
+                Text = Keel.T("Aadressi ei salvestata – seda kasutatakse ainult selle ostu jaoks.", "Адрес используется только для этой покупки и не сохраняется.", "The address is used only for this purchase and is not saved."),
                 ForeColor = Color.Gray,
                 AutoSize = false,
                 Location = new Point(15, y),
@@ -45,10 +45,10 @@ namespace Tooted
             });
             y += 40;
 
-            var btnOk = new Button { Text = "Telli", Location = new Point(15, y), Size = new Size(160, 32) };
+            var btnOk = new Button { Text = Keel.T("Telli", "Заказать", "Place order"), Location = new Point(15, y), Size = new Size(160, 32) };
             var btnLoobu = new Button
             {
-                Text = "Loobu",
+                Text = Keel.T("Loobu", "Отмена", "Cancel"),
                 Location = new Point(185, y),
                 Size = new Size(160, 32),
                 DialogResult = DialogResult.Cancel
@@ -65,14 +65,14 @@ namespace Tooted
 
                 if (tanav.Length < 3)
                 {
-                    MessageBox.Show(this, "Sisesta tänav ja maja number.");
+                    MessageBox.Show(this, Keel.T("Sisesta tänav ja maja number.", "Введите улицу и номер дома.", "Enter the street and house number."));
                     txtTanav.Focus();
                     return;
                 }
 
                 if (linn.Length < 2)
                 {
-                    MessageBox.Show(this, "Sisesta linn.");
+                    MessageBox.Show(this, Keel.T("Sisesta linn.", "Введите город.", "Enter the city."));
                     txtLinn.Focus();
                     return;
                 }
@@ -103,7 +103,7 @@ namespace Tooted
 
         private TootlemisForm()
         {
-            Text = "Tellimus";
+            Text = Keel.T("Tellimus", "Заказ", "Order");
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             ControlBox = false;
@@ -112,7 +112,7 @@ namespace Tooted
 
             Controls.Add(new Label
             {
-                Text = "Palun oota...",
+                Text = Keel.T("Palun oota...", "Пожалуйста, подождите...", "Please wait..."),
                 Font = new Font("Segoe UI", 13F, FontStyle.Bold),
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleCenter,
@@ -122,7 +122,7 @@ namespace Tooted
 
             Controls.Add(new Label
             {
-                Text = "Töötleme tellimust ja otsime kullerit",
+                Text = Keel.T("Töötleme tellimust ja otsime kullerit", "Обрабатываем заказ и ищем курьера", "Processing your order and finding a courier"),
                 AutoSize = false,
                 TextAlign = ContentAlignment.MiddleCenter,
                 Location = new Point(10, 46),
@@ -176,7 +176,7 @@ namespace Tooted
         {
             _t = t;
 
-            Text = testost ? "Testost tehtud" : "Ost tehtud";
+            Text = testost ? Keel.T("Testost tehtud", "Тестовая покупка выполнена", "Test purchase completed") : Keel.T("Ost tehtud", "Покупка выполнена", "Purchase completed");
             StartPosition = FormStartPosition.CenterParent;
             FormBorderStyle = FormBorderStyle.FixedDialog;
             MaximizeBox = false;
@@ -186,7 +186,7 @@ namespace Tooted
 
             Controls.Add(new Label
             {
-                Text = testost ? "Testost tehtud – aitäh!" : "Aitäh ostu eest!",
+                Text = testost ? Keel.T("Testost tehtud – aitäh!", "Тестовая покупка — спасибо!", "Test purchase completed — thank you!") : Keel.T("Aitäh ostu eest!", "Спасибо за покупку!", "Thank you for your purchase!"),
                 Font = new Font("Segoe UI", 15F, FontStyle.Bold),
                 AutoSize = false,
                 Location = new Point(20, 15),
@@ -197,7 +197,7 @@ namespace Tooted
             {
                 Text = t.KullerTekst + (string.IsNullOrWhiteSpace(t.Aadress)
                     ? ""
-                    : Environment.NewLine + "Aadress: " + t.Aadress),
+                    : Environment.NewLine + Keel.T("Aadress: ", "Адрес: ", "Address: ") + t.Aadress),
                 Font = new Font("Segoe UI", 10.5F, FontStyle.Bold),
                 AutoSize = false,
                 Location = new Point(20, 52),
@@ -216,9 +216,9 @@ namespace Tooted
                 TabStop = false
             });
 
-            var btnPdf = new Button { Text = "Salvesta PDF", Location = new Point(20, 435), Size = new Size(130, 35) };
-            var btnPost = new Button { Text = "Saada e-postile", Location = new Point(160, 435), Size = new Size(150, 35) };
-            var btnSulge = new Button { Text = "Sulge", Location = new Point(320, 435), Size = new Size(120, 35), DialogResult = DialogResult.OK };
+            var btnPdf = new Button { Text = Keel.T("Salvesta PDF", "Сохранить PDF", "Save PDF"), Location = new Point(20, 435), Size = new Size(130, 35) };
+            var btnPost = new Button { Text = Keel.T("Saada e-postile", "Отправить по почте", "Send by email"), Location = new Point(160, 435), Size = new Size(150, 35) };
+            var btnSulge = new Button { Text = Keel.T("Sulge", "Закрыть", "Close"), Location = new Point(320, 435), Size = new Size(120, 35), DialogResult = DialogResult.OK };
 
             btnPdf.Click += (s, e) => SalvestaPdf();
             btnPost.Click += (s, e) => ArveForm.SaadaChek(this, _t);
@@ -236,7 +236,7 @@ namespace Tooted
         {
             using var dlg = new SaveFileDialog
             {
-                Title = "Salvesta arve",
+                Title = Keel.T("Salvesta arve", "Сохранить счёт", "Save invoice"),
                 Filter = "PDF (*.pdf)|*.pdf",
                 DefaultExt = "pdf",
                 FileName = $"Arve_{_t.Number}.pdf"
@@ -248,11 +248,11 @@ namespace Tooted
             try
             {
                 ChekiPdf.Loo(_t, dlg.FileName);
-                MessageBox.Show(this, $"PDF on salvestatud:\n{dlg.FileName}");
+                MessageBox.Show(this, Keel.T($"PDF on salvestatud:\n{dlg.FileName}", $"PDF сохранён:\n{dlg.FileName}", $"PDF saved:\n{dlg.FileName}"));
             }
             catch (Exception ex)
             {
-                MessageBox.Show(this, "PDF salvestamine ebaõnnestus: " + ex.Message);
+                MessageBox.Show(this, Keel.T("PDF salvestamine ebaõnnestus: ", "Не удалось сохранить PDF: ", "PDF saving failed: ") + ex.Message);
             }
         }
 

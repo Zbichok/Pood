@@ -28,86 +28,16 @@ namespace Tooted
                 // Tavakasutajal Tootehaldus-nuppu ei ole: peidame ja nihutame teised nupud ülespoole
                 btnTooted.Visible = false;
                 int nihe = btnPood.Top - btnTooted.Top;
-                foreach (var nupp in new[] { btnPood, btnArve, btnRull, btnLogout })
+                foreach (var nupp in new[] { btnPood, btnArve, btnLogout })
                     nupp.Top -= nihe;
             }
-            Text = $"Peamenüü – {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})";
-
-            new ToolTip().SetToolTip(github, "GitHub");
-            KaivitaRullNupuEfekt();
+            Text = Keel.T($"Peamenüü – {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})", $"Главное меню — {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})", $"Main menu — {AktiivneKasutaja.Nimi} ({AktiivneKasutaja.Roll})");
         }
 
-        // ---------- Rulli nupp: vikerkaar, kui täna veel saab keerata ----------
-        private System.Windows.Forms.Timer? rullTimer;
-        private double rullKraad;
-        private bool rullSaadaval;
-        private Font? rullPaksFont;
-        private Color algTaust, algTekst, algJoon;
-        private int algJooneSuurus;
-        private Font? algFont;
-        private string algTekstSona = "";
-
-        private void KaivitaRullNupuEfekt()
-        {
-            algTaust = btnRull.BackColor;
-            algTekst = btnRull.ForeColor;
-            algJoon = btnRull.FlatAppearance.BorderColor;
-            algJooneSuurus = btnRull.FlatAppearance.BorderSize;
-            algFont = btnRull.Font;
-            algTekstSona = btnRull.Text;
-            rullPaksFont = new Font(btnRull.Font, FontStyle.Bold);
-
-            rullTimer = new System.Windows.Forms.Timer { Interval = 40 };
-            rullTimer.Tick += (s, e) => UuendaRullNuppu();
-            rullTimer.Start();
-            UuendaRullNuppu();
-        }
-
-        private void UuendaRullNuppu()
-        {
-            if (AktiivneKasutaja.VoibKeerata)
-            {
-                rullSaadaval = true;
-                rullKraad += 6;
-                double pulss = 0.5 + 0.5 * Math.Sin(rullKraad / 12.0);
-
-                btnRull.Text = "★ PÄEVANE RULL ★";
-                btnRull.Font = rullPaksFont;
-                btnRull.ForeColor = Color.Black;
-                btnRull.BackColor = Stiil.Vikerkaar(rullKraad);
-                btnRull.FlatAppearance.BorderColor = Stiil.Vikerkaar(rullKraad + 180, 0.9);
-                btnRull.FlatAppearance.BorderSize = 2 + (int)Math.Round(2 * pulss);
-            }
-            else if (rullSaadaval || btnRull.Text == algTekstSona)
-            {
-                // Täna juba keeratud: tavaline, vaikne nupp
-                rullSaadaval = false;
-                btnRull.Text = "Päevane rull (homme)";
-                btnRull.Font = algFont;
-                btnRull.ForeColor = algTekst;
-                btnRull.BackColor = algTaust;
-                btnRull.FlatAppearance.BorderColor = algJoon;
-                btnRull.FlatAppearance.BorderSize = algJooneSuurus;
-            }
-        }
-
-        protected override void OnFormClosed(FormClosedEventArgs e)
-        {
-            rullTimer?.Stop();
-            rullTimer?.Dispose();
-            rullPaksFont?.Dispose();
-            base.OnFormClosed(e);
-        }
         private void btnLogout_Click(object sender, EventArgs e)
         {
             LogiValja = true;
             Close();
-        }
-
-        private void btnRull_Click(object sender, EventArgs e)
-        {
-            using var rull = new RullForm();
-            rull.ShowDialog();
         }
 
         private void btnTooted_Click(object sender, EventArgs e)
@@ -126,25 +56,6 @@ namespace Tooted
         {
             ArveForm arve = new ArveForm();
             arve.ShowDialog();
-        }
-
-        // GitHubi ikoon on PictureBox (mitte nupp). Link avatakse Windowsi Exploreri kaudu,
-        // see avab aadressi vaikebrauseris.
-        private void pbGithub_Click(object? sender, EventArgs e)
-        {
-            AvaLink("https://github.com/Zbichok?tab=repositories");
-        }
-
-        private static void AvaLink(string url)
-        {
-            try
-            {
-                System.Diagnostics.Process.Start("explorer.exe", url);
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show("Brauserit ei saanud avada: " + ex.Message);
-            }
         }
     }
 }
